@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 
 // importing data model schemas
-const { eventdata } = require('../models/models')
+const { events } = require('../models/models')
 
 // GET all entries
 router.get('/', (req, res, next) => {
-  eventdata.find(
+  events.find(
     (error, data) => {
       if (error) {
         return next(error)
@@ -19,7 +19,7 @@ router.get('/', (req, res, next) => {
 
 // GET single entry by ID
 router.get('/id/:id', (req, res, next) => {
-  eventdata.find({ _id: req.params.id }, (error, data) => {
+  events.find({ _id: req.params.id }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -39,7 +39,7 @@ router.get('/search/', (req, res, next) => {
       date: req.query.eventDate
     }
   };
-  eventdata.find(
+  events.find(
     dbQuery,
     (error, data) => {
       if (error) {
@@ -53,7 +53,7 @@ router.get('/search/', (req, res, next) => {
 
 // GET events for which a client is signed up
 router.get('/client/:id', (req, res, next) => {
-  eventdata.find(
+  events.find(
     { attendees: req.params.id },
     (error, data) => {
       if (error) {
@@ -67,7 +67,7 @@ router.get('/client/:id', (req, res, next) => {
 
 // POST
 router.post('/', (req, res, next) => {
-  eventdata.create(
+  events.create(
     req.body,
     (error, data) => {
       if (error) {
@@ -81,7 +81,7 @@ router.post('/', (req, res, next) => {
 
 // PUT
 router.put('/:id', (req, res, next) => {
-  eventdata.findOneAndUpdate(
+  events.findOneAndUpdate(
     { _id: req.params.id },
     req.body,
     (error, data) => {
@@ -97,14 +97,14 @@ router.put('/:id', (req, res, next) => {
 // PUT add attendee to event
 router.put('/addAttendee/:id', (req, res, next) => {
   // only add attendee if not yet signed up
-  eventdata.find(
+  events.find(
     { _id: req.params.id, attendees: req.body.attendee },
     (error, data) => {
       if (error) {
         return next(error)
       } else {
         if (data.length === 0) {
-          eventdata.updateOne(
+          events.updateOne(
             { _id: req.params.id },
             { $push: { attendees: req.body.attendee } },
             (error, data) => {

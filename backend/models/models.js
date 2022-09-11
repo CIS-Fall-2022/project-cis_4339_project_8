@@ -71,7 +71,7 @@ const orgDataSchema = new Schema({
   collection: 'org'
 })
 
-// collection for eventData
+// collection for events
 const eventDataSchema = new Schema({
   _id: { type: String, default: uuid.v1 },
   org_id: {
@@ -117,9 +117,9 @@ const eventDataSchema = new Schema({
 })
 
 // create models from mongoose schemas
-const primarydata = mongoose.model('client', clientDataSchema)
-const orgdata = mongoose.model('org', orgDataSchema)
-const eventdata = mongoose.model('event', eventDataSchema)
+const clients = mongoose.model('client', clientDataSchema)
+const orgs = mongoose.model('org', orgDataSchema)
+const events = mongoose.model('event', eventDataSchema)
 
 // package the models in an object to export
-module.exports = { primarydata, orgdata, eventdata }
+module.exports = { clients, orgs, events }

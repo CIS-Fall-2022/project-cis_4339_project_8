@@ -38,7 +38,7 @@ export default {
       const isFormCorrect = await this.v$.$validate();
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata`;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/clients`;
         axios
           .post(apiURL, this.client)
           .then(() => {
@@ -92,18 +92,24 @@ export default {
 </script>
 <template>
   <main>
-    <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Client Intake Form</h1>
+    <h1
+      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+    >
+      Client Intake Form
+    </h1>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Personal Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -114,7 +120,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.firstName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -136,7 +144,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -148,7 +156,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.lastName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -169,7 +179,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.email.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -177,19 +189,25 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
                 v-model="client.phoneNumbers[0].primaryPhone"
               />
-              <span class="text-black" v-if="v$.client.phoneNumbers[0].primaryPhone.$error">
+              <span
+                class="text-black"
+                v-if="v$.client.phoneNumbers[0].primaryPhone.$error"
+              >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers[0].primaryPhone.$errors"
+                  v-for="error of v$.client.phoneNumbers[0].primaryPhone
+                    .$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -208,7 +226,9 @@ export default {
         </div>
 
         <!-- grid container -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Address Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
@@ -236,7 +256,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -247,7 +267,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.address.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -277,7 +299,9 @@ export default {
           <div></div>
           <!-- submit button -->
           <div class="flex justify-between mt-10 mr-20">
-            <button class="bg-red-700 text-white rounded" type="submit">Add Client</button>
+            <button class="bg-red-700 text-white rounded" type="submit">
+              Add Client
+            </button>
           </div>
         </div>
       </form>

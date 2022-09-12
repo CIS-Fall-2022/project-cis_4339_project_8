@@ -68,20 +68,19 @@ export default {
         import.meta.env.VITE_ROOT_API +
           `/events/client/${this.$route.params.id}`
       )
-      .then((resp) => {
-        let data = resp.data;
-        resp.data.forEach((event) => {
+      .then((res) => {
+        res.data.forEach((event) => {
           this.clientEvents.push({
-            eventName: event.eventName,
+            name: event.name,
             eventDate: event.date,
           });
         });
       });
-    axios.get(import.meta.env.VITE_ROOT_API + `/events`).then((resp) => {
-      let data = resp.data;
+    axios.get(import.meta.env.VITE_ROOT_API + `/events`).then((res) => {
+      let data = res.data;
       for (let i = 0; i < data.length; i++) {
         this.events.push({
-          eventName: data[i].eventName,
+          name: data[i].name,
           _id: data[i]._id,
           attendees: data[i].attendees,
         });
@@ -116,7 +115,7 @@ export default {
               let data = resp.data;
               for (let i = 0; i < data.length; i++) {
                 this.clientEvents.push({
-                  eventName: data[i].eventName,
+                  name: data[i].name,
                 });
               }
             });
@@ -380,7 +379,7 @@ export default {
               </thead>
               <tbody class="divide-y divide-gray-300">
                 <tr v-for="event in clientEvents" :key="event._id">
-                  <td class="p-2 text-left">{{ event.eventName }}</td>
+                  <td class="p-2 text-left">{{ event.name }}</td>
                   <td class="p-2 text-left">
                     {{ formattedDate(event.eventDate) }}
                   </td>
@@ -396,7 +395,7 @@ export default {
               v-model="eventsChosen"
               :options="events"
               :multiple="true"
-              label="eventName"
+              label="name"
             ></VueMultiselect>
             <div class="flex justify-between">
               <button

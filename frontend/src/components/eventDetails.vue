@@ -58,7 +58,7 @@ export default {
                 attendeeFirstName: data.firstName,
                 attendeeLastName: data.lastName,
                 attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumbers.primaryPhone,
+                attendeePhoneNumber: data.phoneNumber.primary,
               });
             });
         }

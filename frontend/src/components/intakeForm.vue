@@ -16,9 +16,9 @@ export default {
         middleName: "",
         lastName: "",
         email: "",
-        phoneNumbers: {
-            primaryPhone: "",
-            secondaryPhone: "",
+        phoneNumber: {
+            primary: "",
+            alternate: "",
         },
         address: {
           line1: "",
@@ -47,9 +47,9 @@ export default {
               middleName: "",
               lastName: "",
               email: "",
-              phoneNumbers: {
-                  primaryPhone: "",
-                  secondaryPhone: "",
+              phoneNumber: {
+                  primary: "",
+                  alternate: "",
               },
               address: {
                 line1: "",
@@ -76,8 +76,8 @@ export default {
         address: {
           city: { required },
         },
-        phoneNumbers: {
-            primaryPhone: { required, numeric },
+        phoneNumber: {
+            primary: { required, numeric },
         },
       },
     };
@@ -188,15 +188,15 @@ export default {
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers.primaryPhone"
+                v-model="client.phoneNumber.primary"
               />
               <span
                 class="text-black"
-                v-if="v$.client.phoneNumbers.primaryPhone.$error"
+                v-if="v$.client.phoneNumber.primary.$error"
               >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers.primaryPhone
+                  v-for="error of v$.client.phoneNumber.primary
                     .$errors"
                   :key="error.$uid"
                 >
@@ -213,7 +213,7 @@ export default {
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers.secondaryPhone"
+                v-model="client.phoneNumber.alternate"
               />
             </label>
           </div>

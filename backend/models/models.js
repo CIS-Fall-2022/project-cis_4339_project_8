@@ -19,16 +19,13 @@ const clientDataSchema = new Schema({
   email: {
     type: String
   },
-  phoneNumbers: {
-    primaryPhone: {
+  phoneNumber: {
+    primary: {
       type: String,
-      // https://stackoverflow.com/a/18091377
-      match: /\(?\d{3}\)?-? *\d{3}-? *-?\d{4}/,
       required: true
     },
-    secondaryPhone: {
-      type: String,
-      match: /\(?\d{3}\)?-? *\d{3}-? *-?\d{4}/
+    alternate: {
+      type: String
     }
   },
   address: {

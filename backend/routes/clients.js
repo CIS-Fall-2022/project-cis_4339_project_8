@@ -42,7 +42,7 @@ router.get('/search/', (req, res, next) => {
     dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
   } else if (req.query.searchBy === 'number') {
     dbQuery = {
-      'phoneNumbers.primaryPhone': { $regex: `^${req.query['phoneNumbers.primaryPhone']}`, $options: 'i' }
+      'phoneNumber.primary': { $regex: `^${req.query['phoneNumber.primary']}`, $options: 'i' }
     }
   };
   clients.find(

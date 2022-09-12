@@ -29,7 +29,7 @@ export default {
       } else if (this.searchBy === "Client Number") {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/clients/search/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+          `/clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`;
       }
       axios.get(apiURL).then((resp) => {
         this.queryData = resp.data;
@@ -163,7 +163,7 @@ export default {
                 {{ client.firstName + " " + client.lastName }}
               </td>
               <td class="p-2 text-left">
-                {{ client.phoneNumbers.primaryPhone }}
+                {{ client.phoneNumber.primary }}
               </td>
               <td class="p-2 text-left">{{ client.address.city }}</td>
             </tr>

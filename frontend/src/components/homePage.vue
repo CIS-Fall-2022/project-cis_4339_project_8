@@ -1,3 +1,12 @@
+<script>
+export default {
+  methods: {
+    routePush (routeName) {
+      this.$router.push({ name: routeName })
+    }
+  }
+}
+</script>
 <template>
   <main>
     <div>
@@ -5,12 +14,3 @@
     </div>
   </main>
 </template>
-<script>
-export default {
-  methods: {
-    routePush(routeName) {
-      this.$router.push({ name: routeName });
-    },
-  },
-};
-</script>

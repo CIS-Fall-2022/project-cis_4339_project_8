@@ -1,162 +1,162 @@
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import VueMultiselect from "vue-multiselect";
-import axios from "axios";
-import { DateTime } from "luxon";
+import useVuelidate from '@vuelidate/core'
+import { required, email, alpha, numeric } from '@vuelidate/validators'
+import VueMultiselect from 'vue-multiselect'
+import axios from 'axios'
+import { DateTime } from 'luxon'
 
 export default {
-  props: ["id"],
+  props: ['id'],
   components: { VueMultiselect },
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+  setup () {
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data() {
+  data () {
     return {
-      //for multi select
+      // for multi select
       eventsChosen: [],
-      //for multi select event Data
-      eventData: [],
+      // for multi select event Data
+      events: [],
       // Client Data
       client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
-        phoneNumbers: [
-          {
-            primaryPhone: "",
-            secondaryPhone: "",
-          },
-        ],
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: {
+          primary: '',
+          alternate: ''
         },
+        address: {
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
+        }
       },
       // list of events shown in table
-      clientEvents: [],
-    };
+      clientEvents: []
+    }
   },
-  mounted() {
-    window.scrollTo(0, 0);
+  mounted () {
+    window.scrollTo(0, 0)
   },
-  beforeMount() {
+  beforeMount () {
+    axios
+      .get(
+        import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
+      )
+      .then((res) => {
+        const data = res.data[0]
+        this.client.firstName = data.firstName
+        this.client.middleName = data.middleName
+        this.client.lastName = data.lastName
+        this.client.email = data.email
+        this.client.phoneNumber.primary =
+          data.phoneNumber.primary
+        this.client.phoneNumber.alternate =
+          data.phoneNumber.alternate
+        this.client.address.line1 = data.address.line1
+        this.client.address.line2 = data.address.line2
+        this.client.address.city = data.address.city
+        this.client.address.county = data.address.county
+        this.client.address.zip = data.address.zip
+      })
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
-          `/primarydata/id/${this.$route.params.id}`
+          `/events/client/${this.$route.params.id}`
       )
-      .then((resp) => {
-        let data = resp.data[0];
-        this.client.firstName = data.firstName;
-        this.client.middleName = data.middleName;
-        this.client.lastName = data.lastName;
-        this.client.email = data.email;
-        this.client.phoneNumbers[0].primaryPhone =
-          data.phoneNumbers[0].primaryPhone;
-        this.client.phoneNumbers[0].secondaryPhone =
-          data.phoneNumbers[0].secondaryPhone;
-        this.client.address.line1 = data.address.line1;
-        this.client.address.line2 = data.address.line2;
-        this.client.address.city = data.address.city;
-        this.client.address.county = data.address.county;
-        this.client.address.zip = data.address.zip;
-      });
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API +
-          `/eventdata/client/${this.$route.params.id}`
-      )
-      .then((resp) => {
-        let data = resp.data;
-        resp.data.forEach((event) => {
+      .then((res) => {
+        res.data.forEach((event) => {
           this.clientEvents.push({
-            eventName: event.eventName,
-            eventDate: event.date,
-          });
-        });
-      });
-    axios.get(import.meta.env.VITE_ROOT_API + `/eventdata`).then((resp) => {
-      let data = resp.data;
+            name: event.name,
+            eventDate: event.date
+          })
+        })
+      })
+    axios.get(import.meta.env.VITE_ROOT_API + '/events').then((res) => {
+      const data = res.data
       for (let i = 0; i < data.length; i++) {
-        this.eventData.push({
-          eventName: data[i].eventName,
+        this.events.push({
+          name: data[i].name,
           _id: data[i]._id,
-          attendees: data[i].attendees,
-        });
+          attendees: data[i].attendees
+        })
       }
-    });
+    })
   },
   methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    formattedDate (datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleClientUpdate() {
-      let apiURL = import.meta.env.VITE_ROOT_API + `/primarydata/${this.id}`;
+    handleClientUpdate () {
+      const apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`
       axios.put(apiURL, this.client).then(() => {
-        alert("Update has been saved.");
+        alert('Update has been saved.')
         this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
+          console.log(error)
+        })
+      })
     },
-    addToEvent() {
+    addToEvent () {
       this.eventsChosen.forEach((event) => {
-        let apiURL =
-          import.meta.env.VITE_ROOT_API + `/eventdata/addAttendee/` + event._id;
+        const apiURL =
+          import.meta.env.VITE_ROOT_API + '/events/addAttendee/' + event._id
         axios.put(apiURL, { attendee: this.$route.params.id }).then(() => {
-          this.clientEvents = [];
+          this.clientEvents = []
           axios
             .get(
               import.meta.env.VITE_ROOT_API +
-                `/eventdata/client/${this.$route.params.id}`
+                `/events/client/${this.$route.params.id}`
             )
-            .then((resp) => {
-              let data = resp.data;
+            .then((res) => {
+              const data = res.data
               for (let i = 0; i < data.length; i++) {
                 this.clientEvents.push({
-                  eventName: data[i].eventName,
-                });
+                  name: data[i].name
+                })
               }
-            });
-        });
-      });
-    },
+            })
+        })
+      })
+    }
   },
-  validations() {
+  validations () {
     return {
       client: {
         firstName: { required, alpha },
         lastName: { required, alpha },
         email: { email },
-        phoneNumbers: [
-          {
-            primaryPhone: { required, numeric },
-          },
-        ],
-      },
-    };
-  },
-};
+        phoneNumber: {
+          primary: { required, numeric }
+        }
+      }
+    }
+  }
+}
 </script>
 <template>
   <main>
-    <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Update Client</h1>
+    <h1
+      class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+    >
+      Update Client
+    </h1>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Personal Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">First Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -168,7 +168,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.firstName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -190,7 +192,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Last Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -202,7 +204,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.lastName.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -222,7 +226,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.client.email.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -230,19 +236,25 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Phone Number</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].primaryPhone"
+                v-model="client.phoneNumber.primary"
               />
-              <span class="text-black" v-if="v$.client.phoneNumbers[0].primaryPhone.$error">
+              <span
+                class="text-black"
+                v-if="v$.client.phoneNumber.primary.$error"
+              >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumbers[0].primaryPhone.$errors"
+                  v-for="error of v$.client.phoneNumber.primary
+                    .$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -254,14 +266,16 @@ export default {
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 pattern="[0-9]{3}[0-9]{3}[0-9]{4}"
-                v-model="client.phoneNumbers[0].secondaryPhone"
+                v-model="client.phoneNumber.alternate"
               />
             </label>
           </div>
         </div>
 
         <!-- grid container -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Address Details</h2>
           <!-- form field -->
           <div class="flex flex-col">
@@ -289,7 +303,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">City</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -324,27 +338,35 @@ export default {
         </div>
 
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <div class="flex justify-between mt-10 mr-20">
             <button
               @click="handleClientUpdate"
               type="submit"
               class="bg-red-700 text-white rounded"
-            >Update Client</button>
+            >
+              Update Client
+            </button>
           </div>
           <div class="flex justify-between mt-10 mr-20">
             <button
               type="reset"
               class="border border-red-700 bg-white text-red-700 rounded"
               @click="$router.go(-1)"
-            >Go back</button>
+            >
+              Go back
+            </button>
           </div>
         </div>
 
         <hr class="mt-10 mb-10" />
 
         <!-- Client Event Information -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Events for Client</h2>
 
           <div class="flex flex-col col-span-2">
@@ -357,8 +379,10 @@ export default {
               </thead>
               <tbody class="divide-y divide-gray-300">
                 <tr v-for="event in clientEvents" :key="event._id">
-                  <td class="p-2 text-left">{{ event.eventName }}</td>
-                  <td class="p-2 text-left">{{ formattedDate(event.eventDate) }}</td>
+                  <td class="p-2 text-left">{{ event.name }}</td>
+                  <td class="p-2 text-left">
+                    {{ formattedDate(event.eventDate) }}
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -369,16 +393,18 @@ export default {
             <VueMultiselect
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="eventsChosen"
-              :options="eventData"
+              :options="events"
               :multiple="true"
-              label="eventName"
+              label="name"
             ></VueMultiselect>
             <div class="flex justify-between">
               <button
                 @click="addToEvent"
                 type="submit"
                 class="mt-5 bg-red-700 text-white rounded"
-              >Add Client to Events</button>
+              >
+                Add Client to Events
+              </button>
             </div>
           </div>
         </div>

@@ -1,3 +1,64 @@
+<script>
+import { DateTime } from 'luxon'
+import axios from 'axios'
+
+export default {
+  data () {
+    return {
+      queryData: [],
+      // Parameter for search to occur
+      searchBy: '',
+      name: '',
+      eventDate: ''
+    }
+  },
+  mounted () {
+    const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
+    this.queryData = []
+    axios.get(apiURL).then((res) => {
+      this.queryData = res.data
+    })
+    window.scrollTo(0, 0)
+  },
+  methods: {
+    formattedDate (datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
+    },
+    handleSubmitForm () {
+      let apiURL = ''
+      if (this.searchBy === 'Event Name') {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/events/search/?name=${this.name}&searchBy=name`
+      } else if (this.searchBy === 'Event Date') {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/events/search/?eventDate=${this.eventDate}&searchBy=date`
+      }
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
+      })
+    },
+    clearSearch () {
+      // Resets all the variables
+      this.searchBy = ''
+      this.name = ''
+      this.eventDate = ''
+
+      // get all entries
+      const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
+      this.queryData = []
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
+      })
+    },
+    editEvent (eventID) {
+      this.$router.push({ name: 'eventdetails', params: { id: eventID } })
+    }
+  }
+}
+</script>
+
 <template>
   <main>
     <div>
@@ -21,7 +82,7 @@
             <input
               type="text"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="eventName"
+              v-model="name"
               v-on:keyup.enter="handleSubmitForm"
               placeholder="Enter event name"
             />
@@ -73,7 +134,7 @@
           </thead>
           <tbody class="divide-y divide-gray-300">
             <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
-              <td class="p-2 text-left">{{ event.eventName }}</td>
+              <td class="p-2 text-left">{{ event.name }}</td>
               <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
               <td class="p-2 text-left">{{ event.address.line1 }}</td>
             </tr>
@@ -83,63 +144,3 @@
     </div>
   </main>
 </template>
-<script>
-import { DateTime } from "luxon";
-import axios from "axios";
-
-export default {
-  data() {
-    return {
-      queryData: [],
-      //Parameter for search to occur
-      searchBy: "",
-      eventName: "",
-      eventDate: "",
-    };
-  },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
-    this.queryData = [];
-    axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data;
-    });
-    window.scrollTo(0, 0);
-  },
-  methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
-    },
-    handleSubmitForm() {
-      let apiURL = "";
-      if (this.searchBy === "Event Name") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/eventdata/search/?eventName=${this.eventName}&searchBy=name`;
-      } else if (this.searchBy === "Event Date") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/eventdata/search/?eventDate=${this.eventDate}&searchBy=date`;
-      }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    clearSearch() {
-      //Resets all the variables
-      this.searchBy = "";
-      this.eventName = "";
-      this.eventDate = "";
-
-      //get all entries
-      let apiURL = import.meta.env.VITE_ROOT_API + `/eventdata/`;
-      this.queryData = [];
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    editEvent(eventID) {
-      this.$router.push({ name: "eventdetails", params: { id: eventID } });
-    },
-  },
-};
-</script>

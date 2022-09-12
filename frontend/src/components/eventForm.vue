@@ -10,7 +10,7 @@ export default {
     return {
       checkedServices: [],
       event: {
-        org_id: import.meta.env.VITE_ORG_ID,
+        org: import.meta.env.VITE_ORG_ID,
         name: '',
         services: [],
         date: '',
@@ -39,7 +39,7 @@ export default {
             alert('Event has been added.')
             this.$router.push('/findEvents')
             this.event = {
-              org_id: import.meta.env.VITE_ORG_ID,
+              org: import.meta.env.VITE_ORG_ID,
               name: '',
               services: [],
               date: '',

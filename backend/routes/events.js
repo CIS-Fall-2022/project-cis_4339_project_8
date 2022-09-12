@@ -29,11 +29,11 @@ router.get('/id/:id', (req, res, next) => {
 })
 
 // GET entries based on search query
-// Ex: '...?eventName=Food&searchBy=name'
+// Ex: '...?name=Food&searchBy=name'
 router.get('/search/', (req, res, next) => {
   let dbQuery = ''
   if (req.query.searchBy === 'name') {
-    dbQuery = { eventName: { $regex: `^${req.query.eventName}`, $options: 'i' } }
+    dbQuery = { name: { $regex: `^${req.query.name}`, $options: 'i' } }
   } else if (req.query.searchBy === 'date') {
     dbQuery = {
       date: req.query.eventDate

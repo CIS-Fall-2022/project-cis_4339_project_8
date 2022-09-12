@@ -1,6 +1,6 @@
 <script>
 import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
+import { required } from "@vuelidate/validators";
 import axios from "axios";
 import { DateTime } from "luxon";
 
@@ -15,7 +15,7 @@ export default {
       attendeeData: [],
       checkedServices: [],
       event: {
-        eventName: "",
+        name: "",
         services: [],
         date: "",
         address: {
@@ -36,7 +36,7 @@ export default {
       )
       .then((resp) => {
         let data = resp.data[0];
-        this.event.eventName = data.eventName;
+        this.event.name = data.name;
         console.log(data.date);
         this.event.date = DateTime.fromISO(data.date)
           .plus({ days: 1 })
@@ -86,7 +86,7 @@ export default {
   validations() {
     return {
       event: {
-        eventName: { required },
+        name: { required },
         date: { required },
       },
     };
@@ -116,12 +116,12 @@ export default {
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-                v-model="event.eventName"
+                v-model="event.name"
               />
-              <span class="text-black" v-if="v$.event.eventName.$error">
+              <span class="text-black" v-if="v$.event.name.$error">
                 <p
                   class="text-red-700"
-                  v-for="error of v$.event.eventName.$errors"
+                  v-for="error of v$.event.name.$errors"
                   :key="error.$uid"
                 >
                   {{ error.$message }}!

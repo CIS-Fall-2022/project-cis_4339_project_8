@@ -78,13 +78,13 @@ const eventDataSchema = new Schema({
     type: String,
     required: true
   },
-  eventName: {
+  name: {
     type: String,
     required: true
   },
-  services: {
-    type: Array
-  },
+  services: [{
+    type: String
+  }],
   date: {
     type: Date,
     required: true

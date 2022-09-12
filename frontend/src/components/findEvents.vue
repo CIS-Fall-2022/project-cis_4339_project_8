@@ -8,7 +8,7 @@ export default {
       queryData: [],
       //Parameter for search to occur
       searchBy: "",
-      eventName: "",
+      name: "",
       eventDate: "",
     };
   },
@@ -29,7 +29,7 @@ export default {
       if (this.searchBy === "Event Name") {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/events/search/?eventName=${this.eventName}&searchBy=name`;
+          `/events/search/?name=${this.name}&searchBy=name`;
       } else if (this.searchBy === "Event Date") {
         apiURL =
           import.meta.env.VITE_ROOT_API +
@@ -42,7 +42,7 @@ export default {
     clearSearch() {
       //Resets all the variables
       this.searchBy = "";
-      this.eventName = "";
+      this.name = "";
       this.eventDate = "";
 
       //get all entries
@@ -82,7 +82,7 @@ export default {
             <input
               type="text"
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="eventName"
+              v-model="name"
               v-on:keyup.enter="handleSubmitForm"
               placeholder="Enter event name"
             />
@@ -134,7 +134,7 @@ export default {
           </thead>
           <tbody class="divide-y divide-gray-300">
             <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
-              <td class="p-2 text-left">{{ event.eventName }}</td>
+              <td class="p-2 text-left">{{ event.name }}</td>
               <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
               <td class="p-2 text-left">{{ event.address.line1 }}</td>
             </tr>

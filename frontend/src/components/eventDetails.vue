@@ -1,50 +1,50 @@
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import axios from "axios";
-import { DateTime } from "luxon";
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+import axios from 'axios'
+import { DateTime } from 'luxon'
 
 export default {
-  props: ["id"],
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+  props: ['id'],
+  setup () {
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data() {
+  data () {
     return {
       attendeeIDs: [],
       attendeeData: [],
       checkedServices: [],
       event: {
-        name: "",
+        name: '',
         services: [],
-        date: "",
+        date: '',
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
         },
-        description: "",
-      },
-    };
+        description: ''
+      }
+    }
   },
-  beforeMount() {
+  beforeMount () {
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
       )
       .then((resp) => {
-        let data = resp.data[0];
-        this.event.name = data.name;
-        console.log(data.date);
+        const data = resp.data[0]
+        this.event.name = data.name
+        console.log(data.date)
         this.event.date = DateTime.fromISO(data.date)
           .plus({ days: 1 })
-          .toISODate();
-        this.event.description = data.description;
-        this.checkedServices = data.services;
-        this.event.address = data.address;
-        this.attendeeIDs = data.attendees;
+          .toISODate()
+        this.event.description = data.description
+        this.checkedServices = data.services
+        this.event.address = data.address
+        this.attendeeIDs = data.attendees
         for (let i = 0; i < this.attendeeIDs.length; i++) {
           axios
             .get(
@@ -52,46 +52,46 @@ export default {
                 `/clients/id/${this.attendeeIDs[i]}`
             )
             .then((resp) => {
-              let data = resp.data[0];
+              const data = resp.data[0]
               this.attendeeData.push({
                 attendeeID: this.attendeeIDs[i],
                 attendeeFirstName: data.firstName,
                 attendeeLastName: data.lastName,
                 attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumber.primary,
-              });
-            });
+                attendeePhoneNumber: data.phoneNumber.primary
+              })
+            })
         }
-      });
+      })
   },
   methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    formattedDate (datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleEventUpdate() {
-      this.event.services = this.checkedServices;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`;
+    handleEventUpdate () {
+      this.event.services = this.checkedServices
+      const apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`
       axios.put(apiURL, this.event).then(() => {
-        alert("Update has been saved.");
+        alert('Update has been saved.')
         this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
+          console.log(error)
+        })
+      })
     },
-    editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
-    },
+    editClient (clientID) {
+      this.$router.push({ name: 'updateclient', params: { id: clientID } })
+    }
   },
   // sets validations for the various data properties
-  validations() {
+  validations () {
     return {
       event: {
         name: { required },
-        date: { required },
-      },
-    };
-  },
-};
+        date: { required }
+      }
+    }
+  }
+}
 </script>
 <template>
   <main>

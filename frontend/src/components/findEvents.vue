@@ -1,62 +1,62 @@
 <script>
-import { DateTime } from "luxon";
-import axios from "axios";
+import { DateTime } from 'luxon'
+import axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       queryData: [],
-      //Parameter for search to occur
-      searchBy: "",
-      name: "",
-      eventDate: "",
-    };
+      // Parameter for search to occur
+      searchBy: '',
+      name: '',
+      eventDate: ''
+    }
   },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
-    this.queryData = [];
+  mounted () {
+    const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
+    this.queryData = []
     axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data;
-    });
-    window.scrollTo(0, 0);
+      this.queryData = resp.data
+    })
+    window.scrollTo(0, 0)
   },
   methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    formattedDate (datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleSubmitForm() {
-      let apiURL = "";
-      if (this.searchBy === "Event Name") {
+    handleSubmitForm () {
+      let apiURL = ''
+      if (this.searchBy === 'Event Name') {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/events/search/?name=${this.name}&searchBy=name`;
-      } else if (this.searchBy === "Event Date") {
+          `/events/search/?name=${this.name}&searchBy=name`
+      } else if (this.searchBy === 'Event Date') {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/events/search/?eventDate=${this.eventDate}&searchBy=date`;
+          `/events/search/?eventDate=${this.eventDate}&searchBy=date`
       }
       axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
+        this.queryData = resp.data
+      })
     },
-    clearSearch() {
-      //Resets all the variables
-      this.searchBy = "";
-      this.name = "";
-      this.eventDate = "";
+    clearSearch () {
+      // Resets all the variables
+      this.searchBy = ''
+      this.name = ''
+      this.eventDate = ''
 
-      //get all entries
-      let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
-      this.queryData = [];
+      // get all entries
+      const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
+      this.queryData = []
       axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
+        this.queryData = resp.data
+      })
     },
-    editEvent(eventID) {
-      this.$router.push({ name: "eventdetails", params: { id: eventID } });
-    },
-  },
-};
+    editEvent (eventID) {
+      this.$router.push({ name: 'eventdetails', params: { id: eventID } })
+    }
+  }
+}
 </script>
 
 <template>

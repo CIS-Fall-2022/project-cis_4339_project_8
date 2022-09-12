@@ -1,75 +1,75 @@
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import axios from "axios";
+import useVuelidate from '@vuelidate/core'
+import { required } from '@vuelidate/validators'
+import axios from 'axios'
 export default {
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+  setup () {
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data() {
+  data () {
     return {
       checkedServices: [],
       event: {
         org_id: import.meta.env.VITE_ORG_ID,
-        name: "",
+        name: '',
         services: [],
-        date: "",
+        date: '',
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
         },
-        description: ""
-      },
-    };
+        description: ''
+      }
+    }
   },
   methods: {
-    async handleSubmitForm() {
+    async handleSubmitForm () {
       // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
+      const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        this.event.services = this.checkedServices;
-        const apiURL = import.meta.env.VITE_ROOT_API + `/events`;
+        this.event.services = this.checkedServices
+        const apiURL = import.meta.env.VITE_ROOT_API + '/events'
         axios
           .post(apiURL, this.event)
           .then(() => {
-            alert("Event has been added.");
-            this.$router.push("/findEvents");
+            alert('Event has been added.')
+            this.$router.push('/findEvents')
             this.event = {
               org_id: import.meta.env.VITE_ORG_ID,
-              name: "",
+              name: '',
               services: [],
-              date: "",
+              date: '',
               address: {
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zip: "",
+                line1: '',
+                line2: '',
+                city: '',
+                county: '',
+                zip: ''
               },
-              description: ""
-            };
-            this.checkedServices = [];
+              description: ''
+            }
+            this.checkedServices = []
           })
           .catch((error) => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       }
-    },
+    }
   },
   // sets validations for the various data properties
-  validations() {
+  validations () {
     return {
       event: {
         name: { required },
-        date: { required },
-      },
-    };
-  },
-};
+        date: { required }
+      }
+    }
+  }
+}
 </script>
 <template>
   <main>

@@ -1,88 +1,88 @@
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
+import useVuelidate from '@vuelidate/core'
+import { required, email, alpha, numeric } from '@vuelidate/validators'
+import axios from 'axios'
 export default {
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+  setup () {
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  mounted() {
-    window.scrollTo(0, 0);
+  mounted () {
+    window.scrollTo(0, 0)
   },
-  data() {
+  data () {
     return {
       client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        email: '',
         phoneNumber: {
-            primary: "",
-            alternate: "",
+          primary: '',
+          alternate: ''
         },
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-      },
-    };
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
+        }
+      }
+    }
   },
   methods: {
-    async handleSubmitForm() {
+    async handleSubmitForm () {
       // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
+      const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        let apiURL = import.meta.env.VITE_ROOT_API + `/clients`;
+        const apiURL = import.meta.env.VITE_ROOT_API + '/clients'
         axios
           .post(apiURL, this.client)
           .then(() => {
-            alert("Client has been succesfully added.");
-            this.$router.push("/findClient");
+            alert('Client has been succesfully added.')
+            this.$router.push('/findClient')
             this.client = {
-              firstName: "",
-              middleName: "",
-              lastName: "",
-              email: "",
+              firstName: '',
+              middleName: '',
+              lastName: '',
+              email: '',
               phoneNumber: {
-                  primary: "",
-                  alternate: "",
+                primary: '',
+                alternate: ''
               },
               address: {
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zip: "",
-              },
-            };
+                line1: '',
+                line2: '',
+                city: '',
+                county: '',
+                zip: ''
+              }
+            }
           })
           .catch((error) => {
-            console.log(error);
-          });
+            console.log(error)
+          })
       }
-    },
+    }
   },
   // sets validations for the various data properties
-  validations() {
+  validations () {
     return {
       client: {
         firstName: { required, alpha },
         lastName: { required, alpha },
         email: { email },
         address: {
-          city: { required },
+          city: { required }
         },
         phoneNumber: {
-            primary: { required, numeric },
-        },
-      },
-    };
-  },
-};
+          primary: { required, numeric }
+        }
+      }
+    }
+  }
+}
 </script>
 <template>
   <main>

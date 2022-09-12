@@ -1,58 +1,58 @@
 <script>
-import axios from "axios";
+import axios from 'axios'
 
 export default {
-  data() {
+  data () {
     return {
       queryData: [],
-      //Parameter for search to occur
-      searchBy: "",
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-    };
+      // Parameter for search to occur
+      searchBy: '',
+      firstName: '',
+      lastName: '',
+      phoneNumber: ''
+    }
   },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
+  mounted () {
+    const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
     axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data;
-    });
-    window.scrollTo(0, 0);
+      this.queryData = resp.data
+    })
+    window.scrollTo(0, 0)
   },
   methods: {
-    handleSubmitForm() {
-      let apiURL = "";
-      if (this.searchBy === "Client Name") {
+    handleSubmitForm () {
+      let apiURL = ''
+      if (this.searchBy === 'Client Name') {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
-      } else if (this.searchBy === "Client Number") {
+          `/clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`
+      } else if (this.searchBy === 'Client Number') {
         apiURL =
           import.meta.env.VITE_ROOT_API +
-          `/clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`;
+          `/clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`
       }
       axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
+        this.queryData = resp.data
+      })
     },
-    clearSearch() {
-      //Resets all the variables
-      this.searchBy = "";
-      this.firstName = "";
-      this.lastName = "";
-      this.phoneNumber = "";
+    clearSearch () {
+      // Resets all the variables
+      this.searchBy = ''
+      this.firstName = ''
+      this.lastName = ''
+      this.phoneNumber = ''
 
-      //get all entries
-      let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
+      // get all entries
+      const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
       axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
+        this.queryData = resp.data
+      })
     },
-    editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
-    },
-  },
-};
+    editClient (clientID) {
+      this.$router.push({ name: 'updateclient', params: { id: clientID } })
+    }
+  }
+}
 </script>
 <template>
   <main>

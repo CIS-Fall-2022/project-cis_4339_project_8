@@ -1,68 +1,68 @@
 <script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import VueMultiselect from "vue-multiselect";
-import axios from "axios";
-import { DateTime } from "luxon";
+import useVuelidate from '@vuelidate/core'
+import { required, email, alpha, numeric } from '@vuelidate/validators'
+import VueMultiselect from 'vue-multiselect'
+import axios from 'axios'
+import { DateTime } from 'luxon'
 
 export default {
-  props: ["id"],
+  props: ['id'],
   components: { VueMultiselect },
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
+  setup () {
+    return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data() {
+  data () {
     return {
-      //for multi select
+      // for multi select
       eventsChosen: [],
-      //for multi select event Data
+      // for multi select event Data
       events: [],
       // Client Data
       client: {
-        firstName: "",
-        middleName: "",
-        lastName: "",
-        email: "",
+        firstName: '',
+        middleName: '',
+        lastName: '',
+        email: '',
         phoneNumber: {
-            primary: "",
-            alternate: "",
+          primary: '',
+          alternate: ''
         },
         address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
+          line1: '',
+          line2: '',
+          city: '',
+          county: '',
+          zip: ''
+        }
       },
       // list of events shown in table
-      clientEvents: [],
-    };
+      clientEvents: []
+    }
   },
-  mounted() {
-    window.scrollTo(0, 0);
+  mounted () {
+    window.scrollTo(0, 0)
   },
-  beforeMount() {
+  beforeMount () {
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
       )
       .then((resp) => {
-        let data = resp.data[0];
-        this.client.firstName = data.firstName;
-        this.client.middleName = data.middleName;
-        this.client.lastName = data.lastName;
-        this.client.email = data.email;
+        const data = resp.data[0]
+        this.client.firstName = data.firstName
+        this.client.middleName = data.middleName
+        this.client.lastName = data.lastName
+        this.client.email = data.email
         this.client.phoneNumber.primary =
-          data.phoneNumber.primary;
+          data.phoneNumber.primary
         this.client.phoneNumber.alternate =
-          data.phoneNumber.alternate;
-        this.client.address.line1 = data.address.line1;
-        this.client.address.line2 = data.address.line2;
-        this.client.address.city = data.address.city;
-        this.client.address.county = data.address.county;
-        this.client.address.zip = data.address.zip;
-      });
+          data.phoneNumber.alternate
+        this.client.address.line1 = data.address.line1
+        this.client.address.line2 = data.address.line2
+        this.client.address.city = data.address.city
+        this.client.address.county = data.address.county
+        this.client.address.zip = data.address.zip
+      })
     axios
       .get(
         import.meta.env.VITE_ROOT_API +
@@ -72,70 +72,70 @@ export default {
         res.data.forEach((event) => {
           this.clientEvents.push({
             name: event.name,
-            eventDate: event.date,
-          });
-        });
-      });
-    axios.get(import.meta.env.VITE_ROOT_API + `/events`).then((res) => {
-      let data = res.data;
+            eventDate: event.date
+          })
+        })
+      })
+    axios.get(import.meta.env.VITE_ROOT_API + '/events').then((res) => {
+      const data = res.data
       for (let i = 0; i < data.length; i++) {
         this.events.push({
           name: data[i].name,
           _id: data[i]._id,
-          attendees: data[i].attendees,
-        });
+          attendees: data[i].attendees
+        })
       }
-    });
+    })
   },
   methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    formattedDate (datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleClientUpdate() {
-      let apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`;
+    handleClientUpdate () {
+      const apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`
       axios.put(apiURL, this.client).then(() => {
-        alert("Update has been saved.");
+        alert('Update has been saved.')
         this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
+          console.log(error)
+        })
+      })
     },
-    addToEvent() {
+    addToEvent () {
       this.eventsChosen.forEach((event) => {
-        let apiURL =
-          import.meta.env.VITE_ROOT_API + `/events/addAttendee/` + event._id;
+        const apiURL =
+          import.meta.env.VITE_ROOT_API + '/events/addAttendee/' + event._id
         axios.put(apiURL, { attendee: this.$route.params.id }).then(() => {
-          this.clientEvents = [];
+          this.clientEvents = []
           axios
             .get(
               import.meta.env.VITE_ROOT_API +
                 `/events/client/${this.$route.params.id}`
             )
             .then((resp) => {
-              let data = resp.data;
+              const data = resp.data
               for (let i = 0; i < data.length; i++) {
                 this.clientEvents.push({
-                  name: data[i].name,
-                });
+                  name: data[i].name
+                })
               }
-            });
-        });
-      });
-    },
+            })
+        })
+      })
+    }
   },
-  validations() {
+  validations () {
     return {
       client: {
         firstName: { required, alpha },
         lastName: { required, alpha },
         email: { email },
         phoneNumber: {
-            primary: { required, numeric },
-        },
-      },
-    };
-  },
-};
+          primary: { required, numeric }
+        }
+      }
+    }
+  }
+}
 </script>
 <template>
   <main>

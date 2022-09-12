@@ -46,7 +46,7 @@ const clientDataSchema = new Schema({
       type: String
     }
   },
-  orgs_registered: [{
+  orgs: [{
     type: String
   }]
 }, {
@@ -71,7 +71,7 @@ const orgDataSchema = new Schema({
 // collection for events
 const eventDataSchema = new Schema({
   _id: { type: String, default: uuid.v1 },
-  org_id: {
+  org: {
     type: String,
     required: true
   },

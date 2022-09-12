@@ -14,8 +14,8 @@ export default {
   },
   mounted () {
     const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-    axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data
+    axios.get(apiURL).then((res) => {
+      this.queryData = res.data
     })
     window.scrollTo(0, 0)
   },
@@ -31,8 +31,8 @@ export default {
           import.meta.env.VITE_ROOT_API +
           `/clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`
       }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
       })
     },
     clearSearch () {
@@ -44,8 +44,8 @@ export default {
 
       // get all entries
       const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
       })
     },
     editClient (clientID) {

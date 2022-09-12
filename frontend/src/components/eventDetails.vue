@@ -34,8 +34,8 @@ export default {
       .get(
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
       )
-      .then((resp) => {
-        const data = resp.data[0]
+      .then((res) => {
+        const data = res.data[0]
         this.event.name = data.name
         console.log(data.date)
         this.event.date = DateTime.fromISO(data.date)
@@ -51,8 +51,8 @@ export default {
               import.meta.env.VITE_ROOT_API +
                 `/clients/id/${this.attendeeIDs[i]}`
             )
-            .then((resp) => {
-              const data = resp.data[0]
+            .then((res) => {
+              const data = res.data[0]
               this.attendeeData.push({
                 attendeeID: this.attendeeIDs[i],
                 attendeeFirstName: data.firstName,

@@ -47,8 +47,8 @@ export default {
       .get(
         import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
       )
-      .then((resp) => {
-        const data = resp.data[0]
+      .then((res) => {
+        const data = res.data[0]
         this.client.firstName = data.firstName
         this.client.middleName = data.middleName
         this.client.lastName = data.lastName
@@ -111,8 +111,8 @@ export default {
               import.meta.env.VITE_ROOT_API +
                 `/events/client/${this.$route.params.id}`
             )
-            .then((resp) => {
-              const data = resp.data
+            .then((res) => {
+              const data = res.data
               for (let i = 0; i < data.length; i++) {
                 this.clientEvents.push({
                   name: data[i].name

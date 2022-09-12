@@ -15,8 +15,8 @@ export default {
   mounted () {
     const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
     this.queryData = []
-    axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data
+    axios.get(apiURL).then((res) => {
+      this.queryData = res.data
     })
     window.scrollTo(0, 0)
   },
@@ -35,8 +35,8 @@ export default {
           import.meta.env.VITE_ROOT_API +
           `/events/search/?eventDate=${this.eventDate}&searchBy=date`
       }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
       })
     },
     clearSearch () {
@@ -48,8 +48,8 @@ export default {
       // get all entries
       const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
       this.queryData = []
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
       })
     },
     editEvent (eventID) {

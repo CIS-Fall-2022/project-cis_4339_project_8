@@ -1,3 +1,8 @@
+<script>
+export default {
+  name: "App",
+};
+</script>
 <template>
   <main class="flex flex-row">
     <div id="_container" class="h-screen">
@@ -56,13 +61,6 @@
     </div>
   </main>
 </template>
-
-<script>
-export default {
-  name: "App",
-};
-</script>
-
 <style>
 #_container {
   background-color: #c8102e;

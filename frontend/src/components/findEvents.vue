@@ -1,3 +1,64 @@
+<script>
+import { DateTime } from "luxon";
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      queryData: [],
+      //Parameter for search to occur
+      searchBy: "",
+      eventName: "",
+      eventDate: "",
+    };
+  },
+  mounted() {
+    let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
+    this.queryData = [];
+    axios.get(apiURL).then((resp) => {
+      this.queryData = resp.data;
+    });
+    window.scrollTo(0, 0);
+  },
+  methods: {
+    formattedDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    },
+    handleSubmitForm() {
+      let apiURL = "";
+      if (this.searchBy === "Event Name") {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/events/search/?eventName=${this.eventName}&searchBy=name`;
+      } else if (this.searchBy === "Event Date") {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/events/search/?eventDate=${this.eventDate}&searchBy=date`;
+      }
+      axios.get(apiURL).then((resp) => {
+        this.queryData = resp.data;
+      });
+    },
+    clearSearch() {
+      //Resets all the variables
+      this.searchBy = "";
+      this.eventName = "";
+      this.eventDate = "";
+
+      //get all entries
+      let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
+      this.queryData = [];
+      axios.get(apiURL).then((resp) => {
+        this.queryData = resp.data;
+      });
+    },
+    editEvent(eventID) {
+      this.$router.push({ name: "eventdetails", params: { id: eventID } });
+    },
+  },
+};
+</script>
+
 <template>
   <main>
     <div>
@@ -83,63 +144,3 @@
     </div>
   </main>
 </template>
-<script>
-import { DateTime } from "luxon";
-import axios from "axios";
-
-export default {
-  data() {
-    return {
-      queryData: [],
-      //Parameter for search to occur
-      searchBy: "",
-      eventName: "",
-      eventDate: "",
-    };
-  },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
-    this.queryData = [];
-    axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data;
-    });
-    window.scrollTo(0, 0);
-  },
-  methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
-    },
-    handleSubmitForm() {
-      let apiURL = "";
-      if (this.searchBy === "Event Name") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/events/search/?eventName=${this.eventName}&searchBy=name`;
-      } else if (this.searchBy === "Event Date") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/events/search/?eventDate=${this.eventDate}&searchBy=date`;
-      }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    clearSearch() {
-      //Resets all the variables
-      this.searchBy = "";
-      this.eventName = "";
-      this.eventDate = "";
-
-      //get all entries
-      let apiURL = import.meta.env.VITE_ROOT_API + `/events/`;
-      this.queryData = [];
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    editEvent(eventID) {
-      this.$router.push({ name: "eventdetails", params: { id: eventID } });
-    },
-  },
-};
-</script>

@@ -1,3 +1,77 @@
+<script>
+import useVuelidate from "@vuelidate/core";
+import { required } from "@vuelidate/validators";
+import axios from "axios";
+export default {
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  data() {
+    return {
+      checkedServices: [],
+      event: {
+        eventName: "",
+        services: [],
+        date: "",
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
+        description: "",
+        attendees: []
+      },
+    };
+  },
+  methods: {
+    async handleSubmitForm() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate();
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        console.log(this.event)
+        this.event.services = this.checkedServices;
+        let apiURL = import.meta.env.VITE_ROOT_API + `/events`;
+        axios
+          .post(apiURL, this.event)
+          .then(() => {
+            alert("Event has been added.");
+            this.$router.push("/findEvents");
+            this.client = {
+              eventName: "",
+              services: [],
+              date: "",
+              address: {
+                line1: "",
+                line2: "",
+                city: "",
+                county: "",
+                zip: "",
+              },
+              description: "",
+              attendees: []
+            };
+            this.checkedServices = [];
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      }
+    },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      event: {
+        eventName: { required },
+        date: { required },
+      },
+    };
+  },
+};
+</script>
 <template>
   <main>
     <div>
@@ -197,74 +271,3 @@
     </div>
   </main>
 </template>
-<script>
-import useVuelidate from "@vuelidate/core";
-import { required } from "@vuelidate/validators";
-import axios from "axios";
-export default {
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
-  },
-  data() {
-    return {
-      checkedServices: [],
-      event: {
-        eventName: "",
-        services: [],
-        date: "",
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-        description: "",
-      },
-    };
-  },
-  methods: {
-    async handleSubmitForm() {
-      // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate();
-      // If no errors found. isFormCorrect = True then the form is submitted
-      if (isFormCorrect) {
-        this.event.services = this.checkedServices;
-        let apiURL = import.meta.env.VITE_ROOT_API + `/events`;
-        axios
-          .post(apiURL, this.event)
-          .then(() => {
-            alert("Event has been added.");
-            this.$router.push("/findEvents");
-            this.client = {
-              eventName: "",
-              services: [],
-              date: "",
-              address: {
-                line1: "",
-                line2: "",
-                city: "",
-                county: "",
-                zip: "",
-              },
-              description: "",
-            };
-            this.checkedServices = [];
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      }
-    },
-  },
-  // sets validations for the various data properties
-  validations() {
-    return {
-      event: {
-        eventName: { required },
-        date: { required },
-      },
-    };
-  },
-};
-</script>

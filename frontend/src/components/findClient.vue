@@ -1,3 +1,59 @@
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      queryData: [],
+      //Parameter for search to occur
+      searchBy: "",
+      firstName: "",
+      lastName: "",
+      phoneNumber: "",
+    };
+  },
+  mounted() {
+    let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
+    axios.get(apiURL).then((resp) => {
+      this.queryData = resp.data;
+    });
+    window.scrollTo(0, 0);
+  },
+  methods: {
+    handleSubmitForm() {
+      let apiURL = "";
+      if (this.searchBy === "Client Name") {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
+      } else if (this.searchBy === "Client Number") {
+        apiURL =
+          import.meta.env.VITE_ROOT_API +
+          `/clients/search/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
+      }
+      axios.get(apiURL).then((resp) => {
+        this.queryData = resp.data;
+      });
+    },
+    clearSearch() {
+      //Resets all the variables
+      this.searchBy = "";
+      this.firstName = "";
+      this.lastName = "";
+      this.phoneNumber = "";
+
+      //get all entries
+      let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
+      axios.get(apiURL).then((resp) => {
+        this.queryData = resp.data;
+      });
+    },
+    editClient(clientID) {
+      this.$router.push({ name: "updateclient", params: { id: clientID } });
+    },
+  },
+};
+</script>
 <template>
   <main>
     <div>
@@ -107,7 +163,7 @@
                 {{ client.firstName + " " + client.lastName }}
               </td>
               <td class="p-2 text-left">
-                {{ client.phoneNumbers[0].primaryPhone }}
+                {{ client.phoneNumbers.primaryPhone }}
               </td>
               <td class="p-2 text-left">{{ client.address.city }}</td>
             </tr>
@@ -117,59 +173,3 @@
     </div>
   </main>
 </template>
-<script>
-import axios from "axios";
-
-export default {
-  data() {
-    return {
-      queryData: [],
-      //Parameter for search to occur
-      searchBy: "",
-      firstName: "",
-      lastName: "",
-      phoneNumber: "",
-    };
-  },
-  mounted() {
-    let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
-    axios.get(apiURL).then((resp) => {
-      this.queryData = resp.data;
-    });
-    window.scrollTo(0, 0);
-  },
-  methods: {
-    handleSubmitForm() {
-      let apiURL = "";
-      if (this.searchBy === "Client Name") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`;
-      } else if (this.searchBy === "Client Number") {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/clients/search/?phoneNumbers.primaryPhone=${this.phoneNumber}&searchBy=number`;
-      }
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    clearSearch() {
-      //Resets all the variables
-      this.searchBy = "";
-      this.firstName = "";
-      this.lastName = "";
-      this.phoneNumber = "";
-
-      //get all entries
-      let apiURL = import.meta.env.VITE_ROOT_API + `/clients/`;
-      axios.get(apiURL).then((resp) => {
-        this.queryData = resp.data;
-      });
-    },
-    editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
-    },
-  },
-};
-</script>

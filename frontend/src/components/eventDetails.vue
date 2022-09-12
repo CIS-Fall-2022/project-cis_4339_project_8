@@ -1,3 +1,98 @@
+<script>
+import useVuelidate from "@vuelidate/core";
+import { required, email, alpha, numeric } from "@vuelidate/validators";
+import axios from "axios";
+import { DateTime } from "luxon";
+
+export default {
+  props: ["id"],
+  setup() {
+    return { v$: useVuelidate({ $autoDirty: true }) };
+  },
+  data() {
+    return {
+      attendeeIDs: [],
+      attendeeData: [],
+      checkedServices: [],
+      event: {
+        eventName: "",
+        services: [],
+        date: "",
+        address: {
+          line1: "",
+          line2: "",
+          city: "",
+          county: "",
+          zip: "",
+        },
+        description: "",
+      },
+    };
+  },
+  beforeMount() {
+    axios
+      .get(
+        import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
+      )
+      .then((resp) => {
+        let data = resp.data[0];
+        this.event.eventName = data.eventName;
+        console.log(data.date);
+        this.event.date = DateTime.fromISO(data.date)
+          .plus({ days: 1 })
+          .toISODate();
+        this.event.description = data.description;
+        this.checkedServices = data.services;
+        this.event.address = data.address;
+        this.attendeeIDs = data.attendees;
+        for (let i = 0; i < this.attendeeIDs.length; i++) {
+          axios
+            .get(
+              import.meta.env.VITE_ROOT_API +
+                `/clients/id/${this.attendeeIDs[i]}`
+            )
+            .then((resp) => {
+              let data = resp.data[0];
+              this.attendeeData.push({
+                attendeeID: this.attendeeIDs[i],
+                attendeeFirstName: data.firstName,
+                attendeeLastName: data.lastName,
+                attendeeCity: data.address.city,
+                attendeePhoneNumber: data.phoneNumbers.primaryPhone,
+              });
+            });
+        }
+      });
+  },
+  methods: {
+    formattedDate(datetimeDB) {
+      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
+    },
+    handleEventUpdate() {
+      this.event.services = this.checkedServices;
+      let apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`;
+      axios.put(apiURL, this.event).then(() => {
+        alert("Update has been saved.");
+        this.$router.back().catch((error) => {
+          console.log(error);
+        });
+      });
+    },
+    editClient(clientID) {
+      this.$router.push({ name: "updateclient", params: { id: clientID } });
+    },
+  },
+  // sets validations for the various data properties
+  validations() {
+    return {
+      event: {
+        eventName: { required },
+        date: { required },
+      },
+    };
+  },
+};
+</script>
 <template>
   <main>
     <div>
@@ -266,98 +361,3 @@
     </div>
   </main>
 </template>
-<script>
-import useVuelidate from "@vuelidate/core";
-import { required, email, alpha, numeric } from "@vuelidate/validators";
-import axios from "axios";
-import { DateTime } from "luxon";
-
-export default {
-  props: ["id"],
-  setup() {
-    return { v$: useVuelidate({ $autoDirty: true }) };
-  },
-  data() {
-    return {
-      attendeeIDs: [],
-      attendeeData: [],
-      checkedServices: [],
-      event: {
-        eventName: "",
-        services: [],
-        date: "",
-        address: {
-          line1: "",
-          line2: "",
-          city: "",
-          county: "",
-          zip: "",
-        },
-        description: "",
-      },
-    };
-  },
-  beforeMount() {
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
-      )
-      .then((resp) => {
-        let data = resp.data[0];
-        this.event.eventName = data.eventName;
-        console.log(data.date);
-        this.event.date = DateTime.fromISO(data.date)
-          .plus({ days: 1 })
-          .toISODate();
-        this.event.description = data.description;
-        this.checkedServices = data.services;
-        this.event.address = data.address;
-        this.attendeeIDs = data.attendees;
-        for (let i = 0; i < this.attendeeIDs.length; i++) {
-          axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/clients/id/${this.attendeeIDs[i]}`
-            )
-            .then((resp) => {
-              let data = resp.data[0];
-              this.attendeeData.push({
-                attendeeID: this.attendeeIDs[i],
-                attendeeFirstName: data.firstName,
-                attendeeLastName: data.lastName,
-                attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumbers[0].primaryPhone,
-              });
-            });
-        }
-      });
-  },
-  methods: {
-    formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString();
-    },
-    handleEventUpdate() {
-      this.event.services = this.checkedServices;
-      let apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`;
-      axios.put(apiURL, this.event).then(() => {
-        alert("Update has been saved.");
-        this.$router.back().catch((error) => {
-          console.log(error);
-        });
-      });
-    },
-    editClient(clientID) {
-      this.$router.push({ name: "updateclient", params: { id: clientID } });
-    },
-  },
-  // sets validations for the various data properties
-  validations() {
-    return {
-      event: {
-        eventName: { required },
-        date: { required },
-      },
-    };
-  },
-};
-</script>

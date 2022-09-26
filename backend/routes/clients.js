@@ -4,10 +4,7 @@ const router = express.Router()
 // importing data model schemas
 const { clients } = require('../models/models')
 
-// TODO: fix
-// const { events } = require('../models/models')
-
-// GET all entries
+// GET all clients
 router.get('/', (req, res, next) => {
   clients.find(
     (error, data) => {
@@ -20,7 +17,7 @@ router.get('/', (req, res, next) => {
   ).sort({ updatedAt: -1 }).limit(10)
 })
 
-// GET single entry by ID
+// GET single client by ID
 router.get('/id/:id', (req, res, next) => {
   clients.find(
     { _id: req.params.id },
@@ -36,7 +33,7 @@ router.get('/id/:id', (req, res, next) => {
 
 // GET entries based on search query
 // Ex: '...?firstName=Bob&lastName=&searchBy=name'
-router.get('/search/', (req, res, next) => {
+router.get('/search', (req, res, next) => {
   let dbQuery = ''
   if (req.query.searchBy === 'name') {
     dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
@@ -57,11 +54,6 @@ router.get('/search/', (req, res, next) => {
   )
 })
 
-// GET events for a single client
-router.get('/events/:id', (req, res, next) => {
-
-})
-
 // POST
 router.post('/', (req, res, next) => {
   clients.create(
@@ -74,10 +66,6 @@ router.post('/', (req, res, next) => {
       }
     }
   )
-//   TODO: test - doesn't this happen automatically?
-//   clients.createdAt
-//   clients.updatedAt
-//   clients.createdAt instanceof Date
 })
 
 // PUT update (make sure req body doesn't have the id)

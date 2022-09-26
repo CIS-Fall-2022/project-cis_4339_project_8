@@ -4,7 +4,7 @@ const router = express.Router()
 // importing data model schemas
 const { events } = require('../models/models')
 
-// GET all entries
+// GET all events
 router.get('/', (req, res, next) => {
   events.find(
     (error, data) => {
@@ -17,7 +17,7 @@ router.get('/', (req, res, next) => {
   ).sort({ updatedAt: -1 }).limit(10)
 })
 
-// GET single entry by ID
+// GET single event by ID
 router.get('/id/:id', (req, res, next) => {
   events.find({ _id: req.params.id }, (error, data) => {
     if (error) {
@@ -28,7 +28,7 @@ router.get('/id/:id', (req, res, next) => {
   })
 })
 
-// GET entries based on search query
+// GET events based on search query
 // Ex: '...?name=Food&searchBy=name'
 router.get('/search/', (req, res, next) => {
   let dbQuery = ''
@@ -65,7 +65,7 @@ router.get('/client/:id', (req, res, next) => {
   )
 })
 
-// POST
+// POST new event
 router.post('/', (req, res, next) => {
   events.create(
     req.body,
@@ -79,7 +79,7 @@ router.post('/', (req, res, next) => {
   )
 })
 
-// PUT
+// PUT update event
 router.put('/:id', (req, res, next) => {
   events.findOneAndUpdate(
     { _id: req.params.id },

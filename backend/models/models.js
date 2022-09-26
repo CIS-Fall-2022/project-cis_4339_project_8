@@ -2,6 +2,20 @@ const uuid = require('uuid')
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
+// collection for org
+const orgDataSchema = new Schema({
+  _id: {
+    type: String,
+    required: true
+  },
+  name: {
+    type: String,
+    required: true
+  }
+}, {
+  collection: 'org'
+})
+
 // collection for intakeData
 const clientDataSchema = new Schema({
   _id: { type: String, default: uuid.v1 },
@@ -46,26 +60,14 @@ const clientDataSchema = new Schema({
       type: String
     }
   },
-  orgs: [{
-    type: String
-  }]
+  orgs: {
+    type: [{ type: String, ref: 'org' }],
+    required: true,
+    validate: [org => org.length > 0, 'needs at least one org']
+  }
 }, {
   collection: 'client',
   timestamps: true
-})
-
-// collection for org
-const orgDataSchema = new Schema({
-  _id: {
-    type: String,
-    required: true
-  },
-  name: {
-    type: String,
-    required: true
-  }
-}, {
-  collection: 'org'
 })
 
 // collection for events
@@ -107,7 +109,8 @@ const eventDataSchema = new Schema({
     type: String
   },
   attendees: [{
-    type: String
+    type: String,
+    ref: 'client'
   }]
 }, {
   collection: 'event'

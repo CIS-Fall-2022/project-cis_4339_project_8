@@ -12,7 +12,13 @@ This implementation is for NodeJS based on [Express](https://expressjs.com/) and
 
 Setup a .env file with the following variables, e.g.:
 
-    MONGO_URL = mongodb+srv://<username>:<password>@cluster0.abcdc.mongodb.net/dbname
+    MONGO_LOCAL=mongodb://127.0.0.1:27017
+
+    MONGO_CLOUD=mongodb+srv://4339project8:xyoCxHngDsJDuGxs@cluster0.a7yr20t.mongodb.net/test
+
+    PORT=3000
+
+    CLOUD=TRUE
 
 ### Compiles and hot-reloads for development
 

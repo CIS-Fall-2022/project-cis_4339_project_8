@@ -23,3 +23,7 @@ Setup a .env file with the following variables, e.g.:
 ### Compiles and hot-reloads for development
 
     npm start
+    
+### Postman Documentation
+     
+    Rough draft Published: https://documenter.getpostman.com/view/23133138/2s83mdJiqh

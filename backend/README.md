@@ -25,7 +25,7 @@ Setup a .env file with the following variables, e.g.:
     npm start
     All requests should use https (secure) not http.
     
-### Postman Documentation
+### Postman Documentation (requests)
      
-    Rough draft Published: https://documenter.getpostman.com/view/23133138/2s83mdJiqh
+    Published: https://documenter.getpostman.com/view/23133138/2s83mdJiqh
     

@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 import axios from 'axios'
 
 export default {
-  data () {
+  data() {
     return {
       queryData: [],
       // Parameter for search to occur
@@ -12,7 +12,7 @@ export default {
       eventDate: ''
     }
   },
-  mounted () {
+  mounted() {
     const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
     this.queryData = []
     axios.get(apiURL).then((res) => {
@@ -21,10 +21,10 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    formattedDate (datetimeDB) {
+    formattedDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleSubmitForm () {
+    handleSubmitForm() {
       let apiURL = ''
       if (this.searchBy === 'Event Name') {
         apiURL =
@@ -39,7 +39,7 @@ export default {
         this.queryData = res.data
       })
     },
-    clearSearch () {
+    clearSearch() {
       // Resets all the variables
       this.searchBy = ''
       this.name = ''
@@ -52,7 +52,7 @@ export default {
         this.queryData = res.data
       })
     },
-    editEvent (eventID) {
+    editEvent(eventID) {
       this.$router.push({ name: 'eventdetails', params: { id: eventID } })
     }
   }
@@ -62,10 +62,16 @@ export default {
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">List of Events</h1>
+      <h1
+        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+      >
+        List of Events
+      </h1>
     </div>
     <div class="px-10 pt-20">
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+      >
         <h2 class="text-2xl font-bold">Search Event By</h2>
         <!-- Displays Client Name search field -->
         <div class="flex flex-col">
@@ -98,7 +104,9 @@ export default {
           />
         </div>
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+      >
         <div></div>
         <div></div>
         <div class="mt-5 grid-cols-2">
@@ -106,19 +114,25 @@ export default {
             class="mr-10 border border-red-700 bg-white text-red-700 rounded"
             @click="clearSearch"
             type="submit"
-          >Clear Search</button>
+          >
+            Clear Search
+          </button>
           <button
             class="bg-red-700 text-white rounded"
             @click="handleSubmitForm"
             type="submit"
-          >Search Event</button>
+          >
+            Search Event
+          </button>
         </div>
       </div>
     </div>
 
     <hr class="mt-10 mb-10" />
     <!-- Display Found Data -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+    >
       <div class="ml-10">
         <h2 class="text-2xl font-bold">List of Events</h2>
         <h3 class="italic">Click table row to edit/display an entry</h3>
@@ -133,7 +147,11 @@ export default {
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-300">
-            <tr @click="editEvent(event._id)" v-for="event in queryData" :key="event._id">
+            <tr
+              @click="editEvent(event._id)"
+              v-for="event in queryData"
+              :key="event._id"
+            >
               <td class="p-2 text-left">{{ event.name }}</td>
               <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
               <td class="p-2 text-left">{{ event.address.line1 }}</td>

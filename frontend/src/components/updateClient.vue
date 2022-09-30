@@ -8,10 +8,10 @@ import { DateTime } from 'luxon'
 export default {
   props: ['id'],
   components: { VueMultiselect },
-  setup () {
+  setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data () {
+  data() {
     return {
       // for multi select
       eventsChosen: [],
@@ -39,10 +39,10 @@ export default {
       clientEvents: []
     }
   },
-  mounted () {
+  mounted() {
     window.scrollTo(0, 0)
   },
-  beforeMount () {
+  beforeMount() {
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
@@ -53,10 +53,8 @@ export default {
         this.client.middleName = data.middleName
         this.client.lastName = data.lastName
         this.client.email = data.email
-        this.client.phoneNumber.primary =
-          data.phoneNumber.primary
-        this.client.phoneNumber.alternate =
-          data.phoneNumber.alternate
+        this.client.phoneNumber.primary = data.phoneNumber.primary
+        this.client.phoneNumber.alternate = data.phoneNumber.alternate
         this.client.address.line1 = data.address.line1
         this.client.address.line2 = data.address.line2
         this.client.address.city = data.address.city
@@ -88,10 +86,10 @@ export default {
     })
   },
   methods: {
-    formattedDate (datetimeDB) {
+    formattedDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleClientUpdate () {
+    handleClientUpdate() {
       const apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`
       axios.put(apiURL, this.client).then(() => {
         alert('Update has been saved.')
@@ -100,7 +98,7 @@ export default {
         })
       })
     },
-    addToEvent () {
+    addToEvent() {
       this.eventsChosen.forEach((event) => {
         const apiURL =
           import.meta.env.VITE_ROOT_API + '/events/addAttendee/' + event._id
@@ -123,7 +121,7 @@ export default {
       })
     }
   },
-  validations () {
+  validations() {
     return {
       client: {
         firstName: { required, alpha },
@@ -249,8 +247,7 @@ export default {
               >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumber.primary
-                    .$errors"
+                  v-for="error of v$.client.phoneNumber.primary.$errors"
                   :key="error.$uid"
                 >
                   {{ error.$message }}!

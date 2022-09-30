@@ -6,10 +6,10 @@ import { DateTime } from 'luxon'
 
 export default {
   props: ['id'],
-  setup () {
+  setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data () {
+  data() {
     return {
       attendeeIDs: [],
       attendeeData: [],
@@ -29,7 +29,7 @@ export default {
       }
     }
   },
-  beforeMount () {
+  beforeMount() {
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
@@ -65,10 +65,10 @@ export default {
       })
   },
   methods: {
-    formattedDate (datetimeDB) {
+    formattedDate(datetimeDB) {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
-    handleEventUpdate () {
+    handleEventUpdate() {
       this.event.services = this.checkedServices
       const apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`
       axios.put(apiURL, this.event).then(() => {
@@ -78,12 +78,12 @@ export default {
         })
       })
     },
-    editClient (clientID) {
+    editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })
     }
   },
   // sets validations for the various data properties
-  validations () {
+  validations() {
     return {
       event: {
         name: { required },
@@ -345,7 +345,7 @@ export default {
                 >
                   <td class="p-2 text-left">
                     {{
-                      client.attendeeFirstName + " " + client.attendeeLastName
+                      client.attendeeFirstName + ' ' + client.attendeeLastName
                     }}
                   </td>
                   <td class="p-2 text-left">{{ client.attendeeCity }}</td>

@@ -91,7 +91,7 @@ router.delete('/:id', (req, res, next) => {
       if (error) {
         return next(error)
       } else {
-        res.send('Student is deleted.')
+        res.send('Client is deleted.')
       }
     }
   )

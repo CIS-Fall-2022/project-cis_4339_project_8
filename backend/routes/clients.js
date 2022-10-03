@@ -83,4 +83,18 @@ router.put('/:id', (req, res, next) => {
   )
 })
 
+// DELETE client by ID
+router.delete('/:id', (req, res, next) => {
+  clients.findOneAndRemove(
+    { _id: req.params.id},
+    (error, data) => {
+      if (error) {
+        return next(error)
+      } else {
+          res.send('Student is deleted.');
+      }
+    }
+  )
+})
+
 module.exports = router

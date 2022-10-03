@@ -87,11 +87,11 @@ router.put('/:id', (req, res, next) => {
 router.delete('/:id', (req, res, next) => {
   clients.findOneAndRemove(
     { _id: req.params.id},
-    (error, data) => {
+    (error) => {
       if (error) {
         return next(error)
       } else {
-          res.send('Student is deleted.');
+        res.send('Student is deleted.')
       }
     }
   )

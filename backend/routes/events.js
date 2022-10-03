@@ -136,7 +136,29 @@ router.delete('/:id', (req, res, next) => {
   )
 })
 
+// DELETE client from event's client array using event name and client first and last name
+//I attempted to try this by first requiring the event name (search for event) then the first and last name of the client to remove
+//maybe somehow program the client id into this to be more accurate
+//Wasn't sure whether to use $sunset or $pull
+router.put('/removeorg', (req, res, next) => {
+  let queryevent = ''
+  let dbQuery = ''
+    if (req.query.searchBy === 'event') {
+      queryevent = {'event': { $regex: `^${req.query['event']}`, $options: 'i' } } 
+      dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
+  events.findOneAndUpdate(
+    { $sunset: { dbQuery }},
+    (error) => {
+      if (error) {
+        return next(error)
+      } else {
+        res.send('Client removed from organization.')
+        }
+      }
+    )
+  }
+})
+
 //Possible other way to delete event: by event name
-//Deleting client from event array (client changes mind on attending event)
 
 module.exports = router

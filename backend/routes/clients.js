@@ -84,7 +84,7 @@ router.put('/:id', (req, res, next) => {
 })
 
 // DELETE client by ID
-router.delete('/:id', (req, res, next) => {
+router.delete('/removeclient', (req, res, next) => {
   clients.findOneAndRemove(
     { _id: req.params.id},
     (error) => {
@@ -97,9 +97,31 @@ router.delete('/:id', (req, res, next) => {
   )
 })
 
-//Possible other way to delete event: name (first and last)
+// DELETE org from client's org array using client first and last name
+//I attempted to try this by first requiring the first and last name (search for client) and requiring which org to remove (from clients org array)
+//maybe somehow program client id into this to be more accurate
+//Wasn't sure whether to use $sunset or $pull
+router.put('/removeorg', (req, res, next) => {
+  let queryname = ''
+  let dbQuery = ''
+    if (req.query.searchBy === 'name') {
+      queryname = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
+      dbQuery = {'organization': { $regex: `^${req.query['organization']}`, $options: 'i' } } 
+  clients.findOneAndUpdate(
+    { $sunset: { dbQuery }},
+    (error) => {
+      if (error) {
+        return next(error)
+      } else {
+        res.send('Client removed from organization.')
+        }
+      }
+    )
+  }
+})
+
+//Possible other way to delete client: by name (first and last)
 //Deleting certain information: address (client becomes homeless), 
 //deleting a alternate phone number (client loses phone)
-//Deleting organization from a client's org list (client leaves organization)
 
 module.exports = router

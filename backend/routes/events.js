@@ -136,4 +136,7 @@ router.delete('/:id', (req, res, next) => {
   )
 })
 
+//Possible other way to delete event: by event name
+//Deleting client from event array (client changes mind on attending event)
+
 module.exports = router

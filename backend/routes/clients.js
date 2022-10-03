@@ -97,4 +97,9 @@ router.delete('/:id', (req, res, next) => {
   )
 })
 
+//Possible other way to delete event: name (first and last)
+//Deleting certain information: address (client becomes homeless), 
+//deleting a alternate phone number (client loses phone)
+//Deleting organization from a client's org list (client leaves organization)
+
 module.exports = router

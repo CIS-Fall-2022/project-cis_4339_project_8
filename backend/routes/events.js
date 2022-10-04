@@ -125,7 +125,7 @@ router.put('/addAttendee/:id', (req, res, next) => {
 // DELETE event by ID
 router.delete('/:id', (req, res, next) => {
   events.findOneAndRemove(
-    { _id: req.params.id},
+    { _id: req.params.id },
     (error) => {
       if (error) {
         return next(error)
@@ -137,28 +137,29 @@ router.delete('/:id', (req, res, next) => {
 })
 
 // DELETE client from event's client array using event name and client first and last name
-//I attempted to try this by first requiring the event name (search for event) then the first and last name of the client to remove
-//maybe somehow program the client id into this to be more accurate
-//Wasn't sure whether to use $sunset or $pull
+// I attempted to try this by first requiring the event name (search for event) then the first and last name of the client to remove
+// maybe somehow program the client id into this to be more accurate
+// Wasn't sure whether to use $sunset or $pull
 router.put('/removeorg', (req, res, next) => {
   let queryevent = ''
   let dbQuery = ''
-    if (req.query.searchBy === 'event') {
-      queryevent = {'event': { $regex: `^${req.query['event']}`, $options: 'i' } } 
-      dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
-  events.findOneAndUpdate(
-    { $sunset: { dbQuery }},
-    (error) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.send('Client removed from organization.')
+  if (req.query.searchBy === 'event') {
+    queryevent = { 'attendees.client': { $regex: `^${req.query['attendees.client']}`, $options: 'i' } }
+    dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
+    events.findOneAndUpdate(
+      { queryevent },
+      { $pull: { dbQuery } },
+      (error) => {
+        if (error) {
+          return next(error)
+        } else {
+          res.send('Client removed from organization.')
         }
       }
     )
   }
 })
 
-//Possible other way to delete event: by event name
+// Possible other way to delete event: by event name
 
 module.exports = router

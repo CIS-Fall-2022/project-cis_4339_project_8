@@ -3,10 +3,10 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 export default {
-  setup () {
+  setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  data () {
+  data() {
     return {
       checkedServices: [],
       event: {
@@ -26,7 +26,7 @@ export default {
     }
   },
   methods: {
-    async handleSubmitForm () {
+    async handleSubmitForm() {
       // Checks to see if there are any errors in validation
       const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
@@ -61,7 +61,7 @@ export default {
     }
   },
   // sets validations for the various data properties
-  validations () {
+  validations() {
     return {
       event: {
         name: { required },
@@ -74,20 +74,26 @@ export default {
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Create New Event</h1>
+      <h1
+        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+      >
+        Create New Event
+      </h1>
     </div>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
       <form @submit.prevent="handleSubmitForm">
         <!-- grid container -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Event Details</h2>
 
           <!-- form field -->
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Event Name</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 type="text"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
@@ -98,7 +104,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.event.name.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -107,7 +115,7 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Date</span>
-              <span style="color:#ff0000">*</span>
+              <span style="color: #ff0000">*</span>
               <input
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="event.date"
@@ -118,7 +126,9 @@ export default {
                   class="text-red-700"
                   v-for="error of v$.event.date.$errors"
                   :key="error.$uid"
-                >{{ error.$message }}!</p>
+                >
+                  {{ error.$message }}!
+                </p>
               </span>
             </label>
           </div>
@@ -198,7 +208,9 @@ export default {
         </div>
 
         <!-- grid container -->
-        <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10">
+        <div
+          class="mt-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
+        >
           <h2 class="text-2xl font-bold">Address</h2>
           <!-- form field -->
           <div class="flex flex-col">
@@ -264,7 +276,9 @@ export default {
         </div>
 
         <div class="flex justify-between mt-10 mr-20">
-          <button class="bg-red-700 text-white rounded" type="submit">Add New Event</button>
+          <button class="bg-red-700 text-white rounded" type="submit">
+            Add New Event
+          </button>
         </div>
       </form>
     </div>

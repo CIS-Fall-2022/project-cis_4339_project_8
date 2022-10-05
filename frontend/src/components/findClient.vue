@@ -2,7 +2,7 @@
 import axios from 'axios'
 
 export default {
-  data () {
+  data() {
     return {
       queryData: [],
       // Parameter for search to occur
@@ -12,7 +12,7 @@ export default {
       phoneNumber: ''
     }
   },
-  mounted () {
+  mounted() {
     const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
     axios.get(apiURL).then((res) => {
       this.queryData = res.data
@@ -20,7 +20,7 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    handleSubmitForm () {
+    handleSubmitForm() {
       let apiURL = ''
       if (this.searchBy === 'Client Name') {
         apiURL =
@@ -35,7 +35,7 @@ export default {
         this.queryData = res.data
       })
     },
-    clearSearch () {
+    clearSearch() {
       // Resets all the variables
       this.searchBy = ''
       this.firstName = ''
@@ -48,7 +48,7 @@ export default {
         this.queryData = res.data
       })
     },
-    editClient (clientID) {
+    editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })
     }
   }
@@ -160,7 +160,7 @@ export default {
               :key="client._id"
             >
               <td class="p-2 text-left">
-                {{ client.firstName + " " + client.lastName }}
+                {{ client.firstName + ' ' + client.lastName }}
               </td>
               <td class="p-2 text-left">
                 {{ client.phoneNumber.primary }}

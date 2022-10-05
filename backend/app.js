@@ -9,9 +9,11 @@ require('dotenv').config()
 const app = express()
 
 // add cors header to the server
-app.use(cors({
-  origin: '*'
-}))
+app.use(
+  cors({
+    origin: '*'
+  })
+)
 
 const db = process.env.CLOUD ? process.env.MONGO_CLOUD : process.env.MONGO_LOCAL
 
@@ -44,6 +46,8 @@ app.listen(PORT, () => {
 app.use(function (err, req, res, next) {
   // logs error and error code to console
   console.error(err.message, req)
-  if (!err.statusCode) { err.statusCode = 500 }
+  if (!err.statusCode) {
+    err.statusCode = 500
+  }
   res.status(err.statusCode).send(err.message)
 })

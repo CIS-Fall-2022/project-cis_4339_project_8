@@ -3,13 +3,13 @@ import useVuelidate from '@vuelidate/core'
 import { required, email, alpha, numeric } from '@vuelidate/validators'
 import axios from 'axios'
 export default {
-  setup () {
+  setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  mounted () {
+  mounted() {
     window.scrollTo(0, 0)
   },
-  data () {
+  data() {
     return {
       client: {
         firstName: '',
@@ -31,7 +31,7 @@ export default {
     }
   },
   methods: {
-    async handleSubmitForm () {
+    async handleSubmitForm() {
       // Checks to see if there are any errors in validation
       const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
@@ -67,7 +67,7 @@ export default {
     }
   },
   // sets validations for the various data properties
-  validations () {
+  validations() {
     return {
       client: {
         firstName: { required, alpha },
@@ -196,8 +196,7 @@ export default {
               >
                 <p
                   class="text-red-700"
-                  v-for="error of v$.client.phoneNumber.primary
-                    .$errors"
+                  v-for="error of v$.client.phoneNumber.primary.$errors"
                   :key="error.$uid"
                 >
                   {{ error.$message }}!

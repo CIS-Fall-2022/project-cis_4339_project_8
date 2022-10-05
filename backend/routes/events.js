@@ -6,15 +6,16 @@ const { events } = require('../models/models')
 
 // GET all events
 router.get('/', (req, res, next) => {
-  events.find(
-    (error, data) => {
+  events
+    .find((error, data) => {
       if (error) {
         return next(error)
       } else {
         return res.json(data)
       }
-    }
-  ).sort({ updatedAt: -1 }).limit(10)
+    })
+    .sort({ updatedAt: -1 })
+    .limit(10)
 })
 
 // GET single event by ID
@@ -38,60 +39,47 @@ router.get('/search/', (req, res, next) => {
     dbQuery = {
       date: req.query.eventDate
     }
-  };
-  events.find(
-    dbQuery,
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.json(data)
-      }
+  }
+  events.find(dbQuery, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
     }
-  )
+  })
 })
 
 // GET events for which a client is signed up
 router.get('/client/:id', (req, res, next) => {
-  events.find(
-    { attendees: req.params.id },
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.json(data)
-      }
+  events.find({ attendees: req.params.id }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
     }
-  )
+  })
 })
 
 // POST new event
 router.post('/', (req, res, next) => {
-  events.create(
-    req.body,
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.json(data)
-      }
+  events.create(req.body, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
     }
-  )
+  })
 })
 
 // PUT update event
 router.put('/:id', (req, res, next) => {
-  events.findOneAndUpdate(
-    { _id: req.params.id },
-    req.body,
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else {
-        res.json(data)
-      }
+  events.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      res.json(data)
     }
-  )
+  })
 })
 
 // PUT add attendee to event

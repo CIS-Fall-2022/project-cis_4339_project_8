@@ -18,10 +18,32 @@
   },
   "devDependencies": {
     "eslint": "^8.23.0",
-    "eslint-config-standard": "^17.0.0",
-    "eslint-plugin-import": "^2.26.0",
-    "eslint-plugin-n": "^15.2.5",
-    "eslint-plugin-promise": "^6.0.1",
-    "eslint-plugin-vue": "^9.4.0"
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "prettier": "^2.7.1"
+  },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "prettier"
+    ],
+    "env": {
+      "es2022": true
+    },
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "semi": false,
+          "trailingComma": "none"
+        }
+      ],
+      "arrow-body-style": "off",
+      "prefer-arrow-callback": "off"
+    },
+    "plugins": [
+      "prettier"
+    ]
   }
 }

@@ -8,7 +8,7 @@ This project uses NodeJS and MongoDB and Javascript.
 
     cd backend
 
-Follow instructions in backend README
+Follow instructions in backend README for cloud and local instances
 
 ## Frontend Vue 3 Application
 

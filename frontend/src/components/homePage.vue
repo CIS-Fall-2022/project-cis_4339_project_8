@@ -1,7 +1,7 @@
 <script>
 export default {
   methods: {
-    routePush (routeName) {
+    routePush(routeName) {
       this.$router.push({ name: routeName })
     }
   }
@@ -10,7 +10,11 @@ export default {
 <template>
   <main>
     <div>
-      <h1 class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10">Welcome</h1>
+      <h1
+        class="font-bold text-4xl text-red-700 tracking-widest text-center mt-10"
+      >
+        Welcome
+      </h1>
     </div>
   </main>
 </template>

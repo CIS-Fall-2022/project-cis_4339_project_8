@@ -29,3 +29,21 @@ Setup a .env file with the following variables, e.g.:
      
     Published: https://documenter.getpostman.com/view/23133138/2s83mdJiqh
     
+    
+    GET Find Client
+    
+    http://127.0.0.1:3000/clients/search?phoneNumber.primary=1234567890&searchBy=number
+
+     Request to find a client based on Phone number.
+
+Query Params
+firstName
+John
+lastName
+Johnson
+phoneNumber.primary
+1234567890
+searchBy
+number
+name, number
+

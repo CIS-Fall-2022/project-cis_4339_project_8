@@ -1,9 +1,10 @@
 const express = require('express')
-const mongoose = require('mongoose')
-const morgan = require('morgan') // better debugging
+const mongoose = require('mongoose') //require mongoose library functionaility
+const morgan = require('morgan') // better debugging and 
+
 const cors = require('cors')
 // allow using a .env file
-require('dotenv').config()
+require('dotenv').config() //require the dotenv
 
 // creates a new instance of express application
 const app = express()
@@ -30,7 +31,7 @@ mongoose
 // declare port number for the api
 const PORT = process.env.PORT || 3000
 
-// setup
+// setup and access request body
 app.use(express.json())
 app.use(morgan('dev'))
 

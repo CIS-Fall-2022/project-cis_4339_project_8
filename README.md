@@ -2,7 +2,7 @@
 
 Requirements:
 
-This project uses NodeJS and MongoDB.
+This project uses NodeJS and MongoDB and Javascript.
 
 ## Backend Node Application
 

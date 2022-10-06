@@ -1,6 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose') //require mongoose library functionaility
-const morgan = require('morgan') // better debugging and 
+const morgan = require('morgan') // better debugging
 
 const cors = require('cors')
 // allow using a .env file
@@ -16,11 +16,9 @@ app.use(
   })
 )
 
-const db = process.env.CLOUD ? process.env.MONGO_CLOUD : process.env.MONGO_LOCAL
-
 // sets up mongoose for the mongoDB connection
 mongoose
-  .connect(db)
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log('Database connection Success!')
   })

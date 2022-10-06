@@ -66,13 +66,79 @@ router.post('/', (req, res, next) => {
   })
 })
 
-// PUT update (make sure req body doesn't have the id)
-router.put('/:id', (req, res, next) => {
+// PUT update client
+router.put('/update/:id', (req, res, next) => {
   clients.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
     if (error) {
       return next(error)
     } else {
       res.json(data)
+    }
+  })
+})
+
+// PUT add existing client to org
+router.put('/register/:org', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      // only add attendee if not yet signed up
+      if (!data.length) {
+        clients.findByIdAndUpdate(
+          req.query.id,
+          { $push: { orgs: req.params.org } },
+          (error, data) => {
+            if (error) {
+              return next(error)
+            } else {
+              res.status(200).send('Client registered with org')
+            }
+          }
+        )
+      } else {
+        res.status(400).send('Client already registered with org')
+      }
+    }
+  })
+})
+
+// PUT remove existing client from org
+router.put('/deregister/:org', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      // only remove client if already registered with org
+      if (data.length) {
+        clients.findByIdAndUpdate(
+          req.query.id,
+          { $pull: { orgs: req.params.org } },
+          (error, data) => {
+            if (error) {
+              console.log(error)
+              return next(error)
+            } else {
+              res.status(200).send('Client deregistered with org')
+            }
+          }
+        )
+      } else {
+        res.status(400).send('Client already unregistered with org')
+      }
+    }
+  })
+})
+
+// hard DELETE client by ID, as per project specifications
+router.delete('/:id', (req, res, next) => {
+  clients.findByIdAndDelete(req.params.id, (error, data) => {
+    if (error) {
+      return next(error)
+    } else if (!data) {
+      res.status(400).send('Client not found')
+    } else {
+      res.status(200).send('Client deleted')
     }
   })
 })

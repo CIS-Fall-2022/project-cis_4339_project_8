@@ -6,8 +6,15 @@ const { clients } = require('../models/models')
 
 // GET all clients
 router.get('/', (req, res, next) => {
+  const dbQuery = {}
+
+  // optionally filter by org
+  if (req.query.org) {
+    dbQuery.orgs = req.query.org
+  }
+
   clients
-    .find((error, data) => {
+    .find(dbQuery, (error, data) => {
       if (error) {
         return next(error)
       } else {
@@ -31,20 +38,23 @@ router.get('/id/:id', (req, res, next) => {
 
 // GET entries based on search query
 // Ex: '...?firstName=Bob&lastName=&searchBy=name'
+// does NOT filter by org, this endpoint will be used by the frontend
+// to determine whether a client exists in the db
 router.get('/search', (req, res, next) => {
-  let dbQuery = ''
-  if (req.query.searchBy === 'name') {
-    dbQuery = {
-      firstName: { $regex: `^${req.query.firstName}`, $options: 'i' },
-      lastName: { $regex: `^${req.query.lastName}`, $options: 'i' }
-    }
-  } else if (req.query.searchBy === 'number') {
-    dbQuery = {
-      'phoneNumber.primary': {
+  const dbQuery = {}
+  switch (req.query.searchBy) {
+    case 'name':
+      dbQuery.firstName = { $regex: `^${req.query.firstName}`, $options: 'i' }
+      dbQuery.lastName = { $regex: `^${req.query.lastName}`, $options: 'i' }
+      break
+    case 'number':
+      dbQuery['phoneNumber.primary'] = {
         $regex: `^${req.query['phoneNumber.primary']}`,
         $options: 'i'
       }
-    }
+      break
+    default:
+      return res.status(400).send('invalid searchBy')
   }
   clients.find(dbQuery, (error, data) => {
     if (error) {
@@ -55,7 +65,7 @@ router.get('/search', (req, res, next) => {
   })
 })
 
-// POST
+// POST new client
 router.post('/', (req, res, next) => {
   clients.create(req.body, (error, data) => {
     if (error) {
@@ -68,7 +78,7 @@ router.post('/', (req, res, next) => {
 
 // PUT update client
 router.put('/update/:id', (req, res, next) => {
-  clients.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
+  clients.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -83,7 +93,7 @@ router.put('/register/:org', (req, res, next) => {
     if (error) {
       return next(error)
     } else {
-      // only add attendee if not yet signed up
+      // only add attendee if not yet registered
       if (!data.length) {
         clients.findByIdAndUpdate(
           req.query.id,
@@ -92,7 +102,7 @@ router.put('/register/:org', (req, res, next) => {
             if (error) {
               return next(error)
             } else {
-              res.status(200).send('Client registered with org')
+              res.send('Client registered with org')
             }
           }
         )
@@ -119,7 +129,7 @@ router.put('/deregister/:org', (req, res, next) => {
               console.log(error)
               return next(error)
             } else {
-              res.status(200).send('Client deregistered with org')
+              res.send('Client deregistered with org')
             }
           }
         )
@@ -138,7 +148,7 @@ router.delete('/:id', (req, res, next) => {
     } else if (!data) {
       res.status(400).send('Client not found')
     } else {
-      res.status(200).send('Client deleted')
+      res.send('Client deleted')
     }
   })
 })

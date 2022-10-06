@@ -6,8 +6,15 @@ const { events } = require('../models/models')
 
 // GET 10 most recent events for org
 router.get('/', (req, res, next) => {
+  const dbQuery = {}
+
+  // optionally filter by org
+  if (req.query.org) {
+    dbQuery.orgs = req.query.org
+  }
+
   events
-    .find((error, data) => {
+    .find(dbQuery, (error, data) => {
       if (error) {
         return next(error)
       } else {
@@ -32,13 +39,16 @@ router.get('/id/:id', (req, res, next) => {
 // GET events based on search query
 // Ex: '...?name=Food&searchBy=name'
 router.get('/search/', (req, res, next) => {
-  let dbQuery = ''
-  if (req.query.searchBy === 'name') {
-    dbQuery = { name: { $regex: `^${req.query.name}`, $options: 'i' } }
-  } else if (req.query.searchBy === 'date') {
-    dbQuery = {
-      date: req.query.eventDate
-    }
+  const dbQuery = { org: req.query.org }
+  switch (req.query.searchBy) {
+    case 'name':
+      dbQuery.name = { $regex: `^${req.query.name}`, $options: 'i' }
+      break
+    case 'date':
+      dbQuery.date = req.query.eventDate
+      break
+    default:
+      return res.status(400).send('invalid searchBy')
   }
   events.find(dbQuery, (error, data) => {
     if (error) {
@@ -51,13 +61,43 @@ router.get('/search/', (req, res, next) => {
 
 // GET events for which a client is signed up
 router.get('/client/:id', (req, res, next) => {
-  events.find({ attendees: req.params.id }, (error, data) => {
+  const dbQuery = { attendees: req.params.id }
+
+  // optionally filter by org
+  if (req.query.org) {
+    dbQuery.org = req.query.org
+  }
+
+  events.find(dbQuery, (error, data) => {
     if (error) {
       return next(error)
     } else {
       res.json(data)
     }
   })
+})
+
+// GET org event attendance for the past two months
+router.get('/attendance', (req, res, next) => {
+  const twoMonthsAgo = new Date()
+  twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2)
+  events
+    .find(
+      { org: req.query.org, date: { $gte: twoMonthsAgo } },
+      { name: 1, attendees: 1 },
+      (error, data) => {
+        if (error) {
+          return next(error)
+        } else {
+          // kinda hacky, replaces array of attendees with an int of the array length
+          data = data.map((event) => {
+            return { ...event._doc, attendees: event.attendees.length }
+          })
+          res.json(data)
+        }
+      }
+    )
+    .sort({ updatedAt: -1 })
 })
 
 // POST new event
@@ -73,7 +113,7 @@ router.post('/', (req, res, next) => {
 
 // PUT update event
 router.put('/update/:id', (req, res, next) => {
-  events.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
+  events.findByIdAndUpdate(req.params.id, req.body, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -100,7 +140,7 @@ router.put('/register', (req, res, next) => {
                 console.log(error)
                 return next(error)
               } else {
-                res.status(200).send('Client added to event')
+                res.send('Client added to event')
               }
             }
           )
@@ -130,7 +170,7 @@ router.put('/deregister', (req, res, next) => {
                 console.log(error)
                 return next(error)
               } else {
-                res.status(200).send('Client deregistered with event')
+                res.send('Client deregistered with event')
               }
             }
           )
@@ -150,7 +190,7 @@ router.delete('/:id', (req, res, next) => {
     } else if (!data) {
       res.status(400).send('Event not found')
     } else {
-      res.status(200).send('Event deleted')
+      res.send('Event deleted')
     }
   })
 })

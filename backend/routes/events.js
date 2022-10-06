@@ -39,7 +39,7 @@ router.get('/id/:id', (req, res, next) => {
 // GET events based on search query
 // Ex: '...?name=Food&searchBy=name'
 router.get('/search/', (req, res, next) => {
-  const dbQuery = {}
+  const dbQuery = { org: req.query.org }
   switch (req.query.searchBy) {
     case 'name':
       dbQuery.name = { $regex: `^${req.query.name}`, $options: 'i' }
@@ -50,9 +50,6 @@ router.get('/search/', (req, res, next) => {
     default:
       return res.status(400).send('invalid searchBy')
   }
-
-  dbQuery.org = req.query.org
-
   events.find(dbQuery, (error, data) => {
     if (error) {
       return next(error)

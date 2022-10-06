@@ -66,8 +66,8 @@ router.post('/', (req, res, next) => {
   })
 })
 
-// PUT update (make sure req body doesn't have the id)
-router.put('/:id', (req, res, next) => {
+// PUT update client
+router.put('/update/:id', (req, res, next) => {
   clients.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
     if (error) {
       return next(error)
@@ -77,46 +77,70 @@ router.put('/:id', (req, res, next) => {
   })
 })
 
-// DELETE client by ID
-router.delete('/removeclient', (req, res, next) => {
-  clients.findOneAndRemove(
-    { _id: req.params.id },
-    (error) => {
-      if (error) {
-        return next(error)
+// PUT add existing client to org
+router.put('/register/:org', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      // only add attendee if not yet signed up
+      if (!data.length) {
+        clients.findByIdAndUpdate(
+          req.query.id,
+          { $push: { orgs: req.params.org } },
+          (error, data) => {
+            if (error) {
+              return next(error)
+            } else {
+              res.status(200).send('Client registered with org')
+            }
+          }
+        )
       } else {
-        res.send('Client is deleted.')
+        res.status(400).send('Client already registered with org')
       }
     }
-  )
+  })
 })
 
-// DELETE org from client's org array using client first and last name
-// I attempted to try this by first requiring the first and last name (search for client) and requiring which org to remove (from clients org array)
-// maybe somehow program client id into this to be more accurate
-// Wasn't sure whether to use $sunset or $pull
-router.put('/removeorg', (req, res, next) => {
-  let queryname = ''
-  let dbQuery = ''
-  if (req.query.searchBy === 'name') {
-    queryname = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
-    dbQuery = { 'orgs.org': { $regex: `^${req.query['orgs.org']}`, $options: 'i' } }
-    clients.findOneAndUpdate(
-      { queryname },
-      { $pull: { dbQuery } },
-      (error) => {
-        if (error) {
-          return next(error)
-        } else {
-          res.send('Client removed from organization.')
-        }
+// PUT remove existing client from org
+router.put('/deregister/:org', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+    if (error) {
+      return next(error)
+    } else {
+      // only remove client if already registered with org
+      if (data.length) {
+        clients.findByIdAndUpdate(
+          req.query.id,
+          { $pull: { orgs: req.params.org } },
+          (error, data) => {
+            if (error) {
+              console.log(error)
+              return next(error)
+            } else {
+              res.status(200).send('Client deregistered with org')
+            }
+          }
+        )
+      } else {
+        res.status(400).send('Client already unregistered with org')
       }
-    )
-  }
+    }
+  })
 })
 
-// Possible other way to delete client: by name (first and last)
-// Deleting certain information: address (client becomes homeless)
-// Or deleting an alternate phone number (client loses phone)
+// hard DELETE client by ID, as per project specifications
+router.delete('/:id', (req, res, next) => {
+  clients.findByIdAndDelete(req.params.id, (error, data) => {
+    if (error) {
+      return next(error)
+    } else if (!data) {
+      res.status(400).send('Client not found')
+    } else {
+      res.status(200).send('Client deleted')
+    }
+  })
+})
 
 module.exports = router

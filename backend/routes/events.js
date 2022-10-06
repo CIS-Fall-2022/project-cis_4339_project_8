@@ -4,7 +4,7 @@ const router = express.Router()
 // importing data model schemas
 const { events } = require('../models/models')
 
-// GET all events
+// GET 10 most recent events for org
 router.get('/', (req, res, next) => {
   events
     .find((error, data) => {
@@ -72,7 +72,7 @@ router.post('/', (req, res, next) => {
 })
 
 // PUT update event
-router.put('/:id', (req, res, next) => {
+router.put('/update/:id', (req, res, next) => {
   events.findOneAndUpdate({ _id: req.params.id }, req.body, (error, data) => {
     if (error) {
       return next(error)
@@ -83,71 +83,76 @@ router.put('/:id', (req, res, next) => {
 })
 
 // PUT add attendee to event
-router.put('/addAttendee/:id', (req, res, next) => {
-  // only add attendee if not yet signed up
+router.put('/register', (req, res, next) => {
   events.find(
-    { _id: req.params.id, attendees: req.body.attendee },
+    { _id: req.query.event, attendees: req.query.client },
     (error, data) => {
       if (error) {
         return next(error)
       } else {
-        if (data.length === 0) {
-          events.updateOne(
-            { _id: req.params.id },
-            { $push: { attendees: req.body.attendee } },
+        // only add attendee if not yet signed up
+        if (!data.length) {
+          events.findByIdAndUpdate(
+            req.query.event,
+            { $push: { attendees: req.query.client } },
             (error, data) => {
               if (error) {
                 console.log(error)
                 return next(error)
               } else {
-                res.json(data)
+                res.status(200).send('Client added to event')
               }
             }
           )
+        } else {
+          res.status(400).send('Client already added to event')
         }
       }
     }
   )
 })
 
-// DELETE event by ID
-router.delete('/:id', (req, res, next) => {
-  events.findOneAndRemove(
-    { _id: req.params.id },
-    (error) => {
+// PUT remove attendee from event
+router.put('/deregister', (req, res, next) => {
+  events.find(
+    { _id: req.query.event, attendees: req.query.client },
+    (error, data) => {
       if (error) {
         return next(error)
       } else {
-        res.send('Event is deleted.')
+        // only remove attendee if already registered
+        if (data.length) {
+          events.findByIdAndUpdate(
+            req.query.event,
+            { $pull: { attendees: req.query.client } },
+            (error, data) => {
+              if (error) {
+                console.log(error)
+                return next(error)
+              } else {
+                res.status(200).send('Client deregistered with event')
+              }
+            }
+          )
+        } else {
+          res.status(400).send('Client already unregistered with event')
+        }
       }
     }
   )
 })
 
-// DELETE client from event's client array using event name and client first and last name
-// I attempted to try this by first requiring the event name (search for event) then the first and last name of the client to remove
-// maybe somehow program the client id into this to be more accurate
-// Wasn't sure whether to use $sunset or $pull
-router.put('/removeorg', (req, res, next) => {
-  let queryevent = ''
-  let dbQuery = ''
-  if (req.query.searchBy === 'event') {
-    queryevent = { 'attendees.client': { $regex: `^${req.query['attendees.client']}`, $options: 'i' } }
-    dbQuery = { firstName: { $regex: `^${req.query.firstName}`, $options: 'i' }, lastName: { $regex: `^${req.query.lastName}`, $options: 'i' } }
-    events.findOneAndUpdate(
-      { queryevent },
-      { $pull: { dbQuery } },
-      (error) => {
-        if (error) {
-          return next(error)
-        } else {
-          res.send('Client removed from organization.')
-        }
-      }
-    )
-  }
+// hard DELETE client by ID, as per project specifications
+router.delete('/:id', (req, res, next) => {
+  events.findByIdAndDelete(req.params.id, (error, data) => {
+    if (error) {
+      return next(error)
+    } else if (!data) {
+      res.status(400).send('Event not found')
+    } else {
+      res.status(200).send('Event deleted')
+    }
+  })
 })
-
-// Possible other way to delete event: by event name
 
 module.exports = router

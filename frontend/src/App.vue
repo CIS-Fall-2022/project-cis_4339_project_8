@@ -1,6 +1,18 @@
 <script>
+import axios from 'axios'
+
 export default {
-  name: 'App'
+  name: 'App',
+  data() {
+    return {
+      orgName: 'Dataplatform'
+    }
+  },
+  beforeMount() {
+    axios.get(import.meta.env.VITE_ROOT_API + `/org`).then((res) => {
+      this.orgName = res.data.name
+    })
+  }
 }
 </script>
 <template>
@@ -71,7 +83,7 @@ export default {
         class="justify-end items-center h-24 flex"
         style="background: linear-gradient(250deg, #c8102e 70%, #efecec 50.6%)"
       >
-        <h1 class="mr-20 text-3xl text-white">Dataplatform</h1>
+        <h1 class="mr-20 text-3xl text-white">{{ this.orgName }}</h1>
       </section>
       <div>
         <router-view></router-view>

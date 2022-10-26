@@ -1,20 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
+const org = process.env.ORG
+
 // importing data model schemas
 const { clients } = require('../models/models')
 
-// GET all clients
+// GET 10 most recent clients for org
 router.get('/', (req, res, next) => {
-  const dbQuery = {}
-
-  // optionally filter by org
-  if (req.query.org) {
-    dbQuery.orgs = req.query.org
-  }
-
   clients
-    .find(dbQuery, (error, data) => {
+    .find({ orgs: org }, (error, data) => {
       if (error) {
         return next(error)
       } else {
@@ -27,7 +22,7 @@ router.get('/', (req, res, next) => {
 
 // GET single client by ID
 router.get('/id/:id', (req, res, next) => {
-  clients.find({ _id: req.params.id }, (error, data) => {
+  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -67,7 +62,9 @@ router.get('/search', (req, res, next) => {
 
 // POST new client
 router.post('/', (req, res, next) => {
-  clients.create(req.body, (error, data) => {
+  const newClient = req.body
+  newClient.orgs = [org]
+  clients.create(newClient, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -88,8 +85,8 @@ router.put('/update/:id', (req, res, next) => {
 })
 
 // PUT add existing client to org
-router.put('/register/:org', (req, res, next) => {
-  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+router.put('/register/', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -97,7 +94,7 @@ router.put('/register/:org', (req, res, next) => {
       if (!data.length) {
         clients.findByIdAndUpdate(
           req.query.id,
-          { $push: { orgs: req.params.org } },
+          { $push: { orgs: org } },
           (error, data) => {
             if (error) {
               return next(error)
@@ -114,8 +111,8 @@ router.put('/register/:org', (req, res, next) => {
 })
 
 // PUT remove existing client from org
-router.put('/deregister/:org', (req, res, next) => {
-  clients.find({ _id: req.query.id, orgs: req.params.org }, (error, data) => {
+router.put('/deregister/', (req, res, next) => {
+  clients.find({ _id: req.query.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -123,7 +120,7 @@ router.put('/deregister/:org', (req, res, next) => {
       if (data.length) {
         clients.findByIdAndUpdate(
           req.query.id,
-          { $pull: { orgs: req.params.org } },
+          { $pull: { orgs: org } },
           (error, data) => {
             if (error) {
               console.log(error)

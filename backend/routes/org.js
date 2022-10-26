@@ -7,7 +7,7 @@ const org = process.env.ORG
 const { orgs } = require('../models/models')
 
 // GET single event by ID
-router.get('/:id', (req, res, next) => {
+router.get('/', (req, res, next) => {
   orgs.findById(org, (error, data) => {
     if (error) {
       return next(error)
@@ -16,3 +16,5 @@ router.get('/:id', (req, res, next) => {
     }
   })
 })
+
+module.exports = router

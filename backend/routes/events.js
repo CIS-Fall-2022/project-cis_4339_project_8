@@ -1,20 +1,15 @@
 const express = require('express')
 const router = express.Router()
 
+const org = process.env.ORG
+
 // importing data model schemas
 const { events } = require('../models/models')
 
 // GET 10 most recent events for org
 router.get('/', (req, res, next) => {
-  const dbQuery = {}
-
-  // optionally filter by org
-  if (req.query.org) {
-    dbQuery.orgs = req.query.org
-  }
-
   events
-    .find(dbQuery, (error, data) => {
+    .find({ org: org }, (error, data) => {
       if (error) {
         return next(error)
       } else {
@@ -39,7 +34,7 @@ router.get('/id/:id', (req, res, next) => {
 // GET events based on search query
 // Ex: '...?name=Food&searchBy=name'
 router.get('/search/', (req, res, next) => {
-  const dbQuery = { org: req.query.org }
+  const dbQuery = { org: org }
   switch (req.query.searchBy) {
     case 'name':
       dbQuery.name = { $regex: `^${req.query.name}`, $options: 'i' }
@@ -61,14 +56,7 @@ router.get('/search/', (req, res, next) => {
 
 // GET events for which a client is signed up
 router.get('/client/:id', (req, res, next) => {
-  const dbQuery = { attendees: req.params.id }
-
-  // optionally filter by org
-  if (req.query.org) {
-    dbQuery.org = req.query.org
-  }
-
-  events.find(dbQuery, (error, data) => {
+  events.find({ attendees: req.params.id, org: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
@@ -83,7 +71,7 @@ router.get('/attendance', (req, res, next) => {
   twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2)
   events
     .find(
-      { org: req.query.org, date: { $gte: twoMonthsAgo } },
+      { org: org, date: { $gte: twoMonthsAgo } },
       { name: 1, attendees: 1 },
       (error, data) => {
         if (error) {
@@ -102,7 +90,9 @@ router.get('/attendance', (req, res, next) => {
 
 // POST new event
 router.post('/', (req, res, next) => {
-  events.create(req.body, (error, data) => {
+  const newEvent = req.body
+  newEvent.org = org
+  events.create(newEvent, (error, data) => {
     if (error) {
       return next(error)
     } else {

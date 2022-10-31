@@ -85,15 +85,15 @@ router.put('/update/:id', (req, res, next) => {
 })
 
 // PUT add existing client to org
-router.put('/register/', (req, res, next) => {
-  clients.find({ _id: req.query.id, orgs: org }, (error, data) => {
+router.put('/register/:id', (req, res, next) => {
+  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
       // only add attendee if not yet registered
       if (!data.length) {
         clients.findByIdAndUpdate(
-          req.query.id,
+          req.params.id,
           { $push: { orgs: org } },
           (error, data) => {
             if (error) {
@@ -111,15 +111,15 @@ router.put('/register/', (req, res, next) => {
 })
 
 // PUT remove existing client from org
-router.put('/deregister/', (req, res, next) => {
-  clients.find({ _id: req.query.id, orgs: org }, (error, data) => {
+router.put('/deregister/:id', (req, res, next) => {
+  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
     } else {
       // only remove client if already registered with org
       if (data.length) {
         clients.findByIdAndUpdate(
-          req.query.id,
+          req.params.id,
           { $pull: { orgs: org } },
           (error, data) => {
             if (error) {

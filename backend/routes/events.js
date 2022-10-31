@@ -90,7 +90,9 @@ router.get('/attendance', (req, res, next) => {
 
 // POST new event
 router.post('/', (req, res, next) => {
-  events.create(req.body, (error, data) => {
+  const newEvent = req.body
+  newEvent.org = org
+  events.create(newEvent, (error, data) => {
     if (error) {
       return next(error)
     } else {

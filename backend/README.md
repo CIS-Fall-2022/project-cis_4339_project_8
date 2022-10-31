@@ -12,6 +12,7 @@ Setup a .env file with the following variables:
 
     MONGO_URL=mongodb+srv://4339project8:xyoCxHngDsJDuGxs@cluster0.a7yr20t.mongodb.net/test
     PORT=3000
+    ORG=communitygarden
 
 ### Compiles and hot-reloads for development
 

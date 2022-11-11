@@ -172,7 +172,7 @@ router.put('/deregister', (req, res, next) => {
   )
 })
 
-// hard DELETE client by ID, as per project specifications
+// hard DELETE event by ID, as per project specifications
 router.delete('/:id', (req, res, next) => {
   events.findByIdAndDelete(req.params.id, (error, data) => {
     if (error) {

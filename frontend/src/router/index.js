@@ -39,6 +39,18 @@ const routes = [
     props: true,
     component: () => import('../components/eventDetails.vue')
   }
+  {
+    path: '/deregister/:id',
+    name: 'deregister',
+    props: true,
+    component: () => import('../components/deregisterOrg.vue')
+  }
+  {
+    path: '/deleteClient/:id',
+    name: 'deleteclient',
+    props: true,
+    component: () => import('../components/deleteClient.vue')
+  }
 ]
 const router = createRouter({
   history: createWebHistory(),

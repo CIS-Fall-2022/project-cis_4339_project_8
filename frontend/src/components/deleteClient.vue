@@ -2,6 +2,10 @@
 import axios from 'axios'
 
 export default {
+  props: ['id'],
+  setup() {
+    return { v$:useVuelidate({ $autoDirty: true }) }
+  },  
   data() {
     return {
       queryData: [],
@@ -19,14 +23,18 @@ export default {
     })
     window.scrollTo(0, 0)
   },
+  beforeMount() { 
+    axios
+      .get (
+        import.meta.env.VITE_ROOT_API +
+    '/clients/id/${this.$route.params.id}'
+    )
+  },
   methods: {
-    chosenClient(selectedClient) {
-      this.client.firstName = selectedClient
-    },
     deleteClient(id) {
-      const apiURL =
-        import.meta.env.VITE_ROOT_API + '/clients/deleteClient/' + client._id
-      let indexOfArrayItem = this.clients.findIndex((i) => i._id === id)
+      const apiURL = 
+        import.meta.env.VITE_ROOT_API + '/clients/deleteClient/' + client._id;
+      let indexOfArrayItem = this.clients.findIndex((i) => i._id === id);
 
       if (window.confirm('Do you really want to delete?')) {
         axios
@@ -34,7 +42,7 @@ export default {
           .then(() => {
             this.clients.splice(indexOfArrayItem, 1)
           })
-          .catch((error) => {
+          this.$router.back().catch((error) => {
             console.log(error)
           })
       }
@@ -52,6 +60,8 @@ export default {
       </h1>
     </div>
     <div class="px-10 pt-20">
+      <!--Want to stop from reloading page after deleting-->
+      <form @submit.prevent="handleSubmitForm">
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"
       >
@@ -121,6 +131,7 @@ export default {
           </button>
         </div>
       </div>
+      </form>
     </div>
   </main>
 </template>

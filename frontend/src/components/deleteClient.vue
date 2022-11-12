@@ -1,4 +1,5 @@
 <script>
+import useVuelidate from '@vuelidate/core'
 import axios from 'axios'
 
 export default {
@@ -17,20 +18,18 @@ export default {
     }
   },
   mounted() {
-    const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-    axios.get(apiURL).then((res) => {
-      this.queryData = res.data
-    })
     window.scrollTo(0, 0)
   },
   beforeMount() { 
     axios
       .get (
-        import.meta.env.VITE_ROOT_API +
-    '/clients/id/${this.$route.params.id}'
+        import.meta.env.VITE_ROOT_API + '/clients/id/${this.$route.params.id}'
     )
   },
   methods: {
+    ChangeT(selectedClient) {
+      this.client.selectedClient = selectedClient
+    },
     deleteClient(id) {
       const apiURL = 
         import.meta.env.VITE_ROOT_API + '/clients/deleteClient/' + client._id;
@@ -44,7 +43,7 @@ export default {
           })
           this.$router.back().catch((error) => {
             console.log(error)
-          })
+          });
       }
     }
   }
@@ -70,13 +69,13 @@ export default {
         <div class="flex flex-col">
           <select
             class="rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-            v-model="searchBy"
+            v-model="deleteBy"
           >
             <option value="Client Name">Client Name</option>
             <option value="Client Number">Client Number</option>
           </select>
         </div>
-        <div class="flex flex-col" v-if="searchBy === 'Client Name'">
+        <div class="flex flex-col" v-if="deleteBy === 'Client Name'">
           <label class="block">
             <input
               type="text"
@@ -87,7 +86,7 @@ export default {
             />
           </label>
         </div>
-        <div class="flex flex-col" v-if="searchBy === 'Client Name'">
+        <div class="flex flex-col" v-if="deleteBy === 'Client Name'">
           <label class="block">
             <input
               type="text"
@@ -99,7 +98,7 @@ export default {
           </label>
         </div>
         <!-- Displays Client Number search field -->
-        <div class="flex flex-col" v-if="searchBy === 'Client Number'">
+        <div class="flex flex-col" v-if="deleteBy === 'Client Number'">
           <input
             class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
             type="text"
@@ -114,18 +113,11 @@ export default {
       >
         <div></div>
         <div></div>
-        <div class="mt-5 grid-cols-2">
+        <div class="flex justify-between mt-10 mr-20">
           <button
-            class="mr-10 border border-red-700 bg-white text-red-700 rounded"
-            @click="clearSearch"
-            type="submit"
-          >
-            Clear Search
-          </button>
-          <button
-            class="bg-red-700 text-white rounded"
             @click="deleteClient"
             type="submit"
+            class="bg-red-700 text-white rounded"
           >
             Delete
           </button>

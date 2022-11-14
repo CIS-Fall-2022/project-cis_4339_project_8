@@ -72,7 +72,7 @@ router.get('/attendance', (req, res, next) => {
   events
     .find(
       { org: org, date: { $gte: twoMonthsAgo } },
-      { name: 1, attendees: 1 },
+      { name: 1, date: 1, attendees: 1 },
       (error, data) => {
         if (error) {
           return next(error)
@@ -85,7 +85,7 @@ router.get('/attendance', (req, res, next) => {
         }
       }
     )
-    .sort({ updatedAt: -1 })
+    .sort({ date: 1 })
 })
 
 // POST new event

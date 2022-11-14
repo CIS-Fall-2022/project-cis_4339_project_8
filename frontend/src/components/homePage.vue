@@ -1,4 +1,5 @@
 <script>
+import { DateTime } from 'luxon'
 import axios from 'axios'
 import AttendanceChart from './barChart.vue'
 
@@ -9,7 +10,7 @@ export default {
   data() {
     return {
       labels: [],
-      enrolled: [],
+      chartData: [],
       loading: false,
       error: null
     }
@@ -22,9 +23,12 @@ export default {
         const response = await axios.get(
           import.meta.env.VITE_ROOT_API + `/events/attendance`
         )
+        console.log(response)
         //"re-organizing" - mapping json from the response
-        this.labels = response.data.map((item) => item.name)
-        this.enrolled = response.data.map((item) => item.attendees)
+        this.labels = response.data.map(
+          (item) => `${item.name} (${this.formattedDate(item.date)})`
+        )
+        this.chartData = response.data.map((item) => item.attendees)
       } catch (err) {
         if (err.response) {
           // client received an error response (5xx, 4xx)
@@ -50,6 +54,14 @@ export default {
     },
     routePush(routeName) {
       this.$router.push({ name: routeName })
+    },
+    formattedDate(d) {
+      const dt = DateTime.fromISO(d, {
+        zone: 'utc'
+      })
+      return dt
+        .setZone(DateTime.now().zoneName, { keepLocalTime: true })
+        .toLocaleString()
     }
   },
   mounted() {
@@ -73,7 +85,7 @@ export default {
           <AttendanceChart
             v-if="!loading && !error"
             :label="labels"
-            :chart-data="enrolled"
+            :chart-data="chartData"
           ></AttendanceChart>
 
           <!-- Start of loading animation -->
@@ -103,3 +115,10 @@ export default {
     </div>
   </section>
 </template>
+<style>
+#chart-wrapper {
+  display: inline-block;
+  position: relative;
+  width: 100%;
+}
+</style>

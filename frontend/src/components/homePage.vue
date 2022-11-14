@@ -9,6 +9,7 @@ export default {
   },
   data() {
     return {
+      recentEvents: [],
       labels: [],
       chartData: [],
       loading: false,
@@ -23,12 +24,11 @@ export default {
         const response = await axios.get(
           import.meta.env.VITE_ROOT_API + `/events/attendance`
         )
-        console.log(response)
-        //"re-organizing" - mapping json from the response
+        this.recentEvents = response.data
         this.labels = response.data.map(
           (item) => `${item.name} (${this.formattedDate(item.date)})`
         )
-        this.chartData = response.data.map((item) => item.attendees)
+        this.chartData = response.data.map((item) => item.attendees.length)
       } catch (err) {
         if (err.response) {
           // client received an error response (5xx, 4xx)

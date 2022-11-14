@@ -17,7 +17,7 @@ export default {
     }
   },
   methods: {
-    async fetchData() {
+    async getAttendanceData() {
       try {
         this.error = null
         this.loading = true
@@ -65,7 +65,7 @@ export default {
     }
   },
   mounted() {
-    this.fetchData()
+    this.getAttendanceData()
   }
 }
 </script>

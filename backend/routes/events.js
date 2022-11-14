@@ -70,22 +70,14 @@ router.get('/attendance', (req, res, next) => {
   const twoMonthsAgo = new Date()
   twoMonthsAgo.setMonth(twoMonthsAgo.getMonth() - 2)
   events
-    .find(
-      { org: org, date: { $gte: twoMonthsAgo } },
-      { name: 1, attendees: 1 },
-      (error, data) => {
-        if (error) {
-          return next(error)
-        } else {
-          // kinda hacky, replaces array of attendees with an int of the array length
-          data = data.map((event) => {
-            return { ...event._doc, attendees: event.attendees.length }
-          })
-          res.json(data)
-        }
+    .find({ org: org, date: { $gte: twoMonthsAgo } }, (error, data) => {
+      if (error) {
+        return next(error)
+      } else {
+        res.json(data)
       }
-    )
-    .sort({ updatedAt: -1 })
+    })
+    .sort({ date: 1 })
 })
 
 // POST new event

@@ -11,9 +11,7 @@ export default {
   },
   data() {
     return {
-      attendeeIDs: [],
-      attendeeData: [],
-      checkedServices: [],
+      clientAttendees: [],
       event: {
         name: '',
         services: [],
@@ -25,51 +23,32 @@ export default {
           county: '',
           zip: ''
         },
-        description: ''
+        description: '',
+        attendees: []
       }
     }
   },
   beforeMount() {
-    console.log('beforeMount')
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
       )
       .then((res) => {
-        // findOne, no need to get array index
-        const data = res.data
-        console.log(data)
-        this.event.name = data.name
-        this.event.date = this.formattedDate(data.date)
-        console.log(this.event.date)
-        this.event.description = data.description
-        this.checkedServices = data.services
-        this.event.address = data.address
-        this.attendeeIDs = data.attendees
-        for (let i = 0; i < this.attendeeIDs.length; i++) {
+        // cleanup and simplify
+        this.event = res.data
+        this.event.attendees.forEach((e) => {
           axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/clients/id/${this.attendeeIDs[i]}`
-            )
+            .get(import.meta.env.VITE_ROOT_API + `/clients/id/${e}`)
             .then((res) => {
-              // findOne, no need to get array index
-              const data = res.data
-              this.attendeeData.push({
-                attendeeID: this.attendeeIDs[i],
-                attendeeFirstName: data.firstName,
-                attendeeLastName: data.lastName,
-                attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumber.primary
-              })
+              // cleanup and simplify
+              this.clientAttendees.push(res.data)
             })
-        }
+        })
       })
   },
   methods: {
     // better formatted date, converts UTC to local time
     formattedDate(datetimeDB) {
-      console.log('formatting date')
       const dt = DateTime.fromISO(datetimeDB, {
         zone: 'utc'
       })
@@ -78,13 +57,10 @@ export default {
         .toLocaleString()
     },
     handleEventUpdate() {
-      this.event.services = this.checkedServices
       const apiURL = import.meta.env.VITE_ROOT_API + `/events/update/${this.id}`
       axios.put(apiURL, this.event).then(() => {
         alert('Update has been saved.')
-        this.$router.back().catch((error) => {
-          console.log(error)
-        })
+        this.$router.back()
       })
     },
     editClient(clientID) {
@@ -187,7 +163,7 @@ export default {
                   type="checkbox"
                   id="familySupport"
                   value="Family Support"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -200,7 +176,7 @@ export default {
                   type="checkbox"
                   id="adultEducation"
                   value="Adult Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -213,7 +189,7 @@ export default {
                   type="checkbox"
                   id="youthServices"
                   value="Youth Services Program"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -226,7 +202,7 @@ export default {
                   type="checkbox"
                   id="childhoodEducation"
                   value="Early Childhood Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -349,18 +325,16 @@ export default {
               </thead>
               <tbody class="divide-y divide-gray-300">
                 <tr
-                  @click="editClient(client.attendeeID)"
-                  v-for="client in attendeeData"
+                  @click="editClient(client._id)"
+                  v-for="client in clientAttendees"
                   :key="client._id"
                 >
                   <td class="p-2 text-left">
-                    {{
-                      client.attendeeFirstName + ' ' + client.attendeeLastName
-                    }}
+                    {{ client.firstName + ' ' + client.lastName }}
                   </td>
-                  <td class="p-2 text-left">{{ client.attendeeCity }}</td>
+                  <td class="p-2 text-left">{{ client.address.city }}</td>
                   <td class="p-2 text-left">
-                    {{ client.attendeePhoneNumber }}
+                    {{ client.phoneNumber.primary }}
                   </td>
                 </tr>
               </tbody>

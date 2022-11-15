@@ -47,7 +47,7 @@ export default {
       this.phoneNumber = ''
 
       // get all entries
-      his.getClients()
+      this.getClients()
     },
     editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })

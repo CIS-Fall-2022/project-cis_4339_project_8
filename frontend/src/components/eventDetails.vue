@@ -36,6 +36,7 @@ export default {
       .then((res) => {
         // cleanup and simplify
         this.event = res.data
+        this.event.date = this.formattedDate(this.event.date)
         this.event.attendees.forEach((e) => {
           axios
             .get(import.meta.env.VITE_ROOT_API + `/clients/id/${e}`)
@@ -54,7 +55,7 @@ export default {
       })
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
-        .toLocaleString()
+        .toISODate()
     },
     handleEventUpdate() {
       const apiURL = import.meta.env.VITE_ROOT_API + `/events/update/${this.id}`

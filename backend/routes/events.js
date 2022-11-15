@@ -22,9 +22,12 @@ router.get('/', (req, res, next) => {
 
 // GET single event by ID
 router.get('/id/:id', (req, res, next) => {
-  events.find({ _id: req.params.id }, (error, data) => {
+  // use findOne instead of find to not return array
+  events.findOne({ _id: req.params.id }, (error, data) => {
     if (error) {
       return next(error)
+    } else if (!data) {
+      res.status(400).send('Event not found')
     } else {
       res.json(data)
     }

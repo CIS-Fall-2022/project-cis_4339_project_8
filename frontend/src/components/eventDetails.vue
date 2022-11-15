@@ -37,7 +37,6 @@ export default {
       .then((res) => {
         const data = res.data[0]
         this.event.name = data.name
-        console.log(data.date)
         this.event.date = DateTime.fromISO(data.date)
           .plus({ days: 1 })
           .toISODate()
@@ -70,7 +69,7 @@ export default {
     },
     handleEventUpdate() {
       this.event.services = this.checkedServices
-      const apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`
+      const apiURL = import.meta.env.VITE_ROOT_API + `/events/update/${this.id}`
       axios.put(apiURL, this.event).then(() => {
         alert('Update has been saved.')
         this.$router.back().catch((error) => {
@@ -161,6 +160,7 @@ export default {
               <textarea
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 rows="2"
+                v-model="event.description"
               ></textarea>
             </label>
           </div>

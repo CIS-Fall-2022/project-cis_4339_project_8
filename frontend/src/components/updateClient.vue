@@ -90,7 +90,8 @@ export default {
       return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
     },
     handleClientUpdate() {
-      const apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`
+      const apiURL =
+        import.meta.env.VITE_ROOT_API + `/clients/update/${this.id}`
       axios.put(apiURL, this.client).then(() => {
         alert('Update has been saved.')
         this.$router.back().catch((error) => {

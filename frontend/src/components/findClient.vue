@@ -13,11 +13,7 @@ export default {
     }
   },
   mounted() {
-    const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-    axios.get(apiURL).then((res) => {
-      this.queryData = res.data
-    })
-    window.scrollTo(0, 0)
+    this.getClients()
   },
   methods: {
     handleSubmitForm() {
@@ -35,6 +31,14 @@ export default {
         this.queryData = res.data
       })
     },
+    // abstract get clients call
+    getClients() {
+      const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
+      })
+      window.scrollTo(0, 0)
+    },
     clearSearch() {
       // Resets all the variables
       this.searchBy = ''
@@ -43,10 +47,7 @@ export default {
       this.phoneNumber = ''
 
       // get all entries
-      const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-      axios.get(apiURL).then((res) => {
-        this.queryData = res.data
-      })
+      his.getClients()
     },
     editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })

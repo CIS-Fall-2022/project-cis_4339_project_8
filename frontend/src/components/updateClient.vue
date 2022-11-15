@@ -13,11 +13,10 @@ export default {
   },
   data() {
     return {
-      // for multi select
-      eventsChosen: [],
-      // for multi select event Data
-      events: [],
-      // Client Data
+      // rename events arrays for added clarity
+      eventsAll: [],
+      eventsSelected: [],
+      eventsRegistered: [],
       client: {
         firstName: '',
         middleName: '',
@@ -34,13 +33,8 @@ export default {
           county: '',
           zip: ''
         }
-      },
-      // list of events shown in table
-      clientEvents: []
+      }
     }
-  },
-  mounted() {
-    window.scrollTo(0, 0)
   },
   beforeMount() {
     axios
@@ -48,18 +42,8 @@ export default {
         import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
       )
       .then((res) => {
-        const data = res.data[0]
-        this.client.firstName = data.firstName
-        this.client.middleName = data.middleName
-        this.client.lastName = data.lastName
-        this.client.email = data.email
-        this.client.phoneNumber.primary = data.phoneNumber.primary
-        this.client.phoneNumber.alternate = data.phoneNumber.alternate
-        this.client.address.line1 = data.address.line1
-        this.client.address.line2 = data.address.line2
-        this.client.address.city = data.address.city
-        this.client.address.county = data.address.county
-        this.client.address.zip = data.address.zip
+        // simplified setting this.client
+        this.client = res.data
       })
     axios
       .get(
@@ -68,26 +52,34 @@ export default {
       )
       .then((res) => {
         res.data.forEach((event) => {
-          this.clientEvents.push({
+          this.eventsRegistered.push({
             name: event.name,
             eventDate: event.date
           })
         })
       })
     axios.get(import.meta.env.VITE_ROOT_API + '/events').then((res) => {
-      const data = res.data
-      for (let i = 0; i < data.length; i++) {
-        this.events.push({
-          name: data[i].name,
-          _id: data[i]._id,
-          attendees: data[i].attendees
+      // rewrote to forEach arrow function for increased readability
+      res.data.forEach((e) => {
+        this.eventsAll.push({
+          name: e.name,
+          _id: e._id
         })
-      }
+      })
     })
   },
+  mounted() {
+    window.scrollTo(0, 0)
+  },
   methods: {
+    // better formattedDate function
     formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
+      const dt = DateTime.fromISO(datetimeDB, {
+        zone: 'utc'
+      })
+      return dt
+        .setZone(DateTime.now().zoneName, { keepLocalTime: true })
+        .toLocaleString()
     },
     handleClientUpdate() {
       const apiURL =
@@ -100,25 +92,26 @@ export default {
       })
     },
     addToEvent() {
-      this.eventsChosen.forEach((event) => {
+      this.eventsSelected.forEach((event) => {
         const apiURL = import.meta.env.VITE_ROOT_API + '/events/register/'
         const query = { event: event._id, client: this.$route.params.id }
         axios
           .put(apiURL, null, { params: query })
           .then(() => {
-            this.clientEvents = []
+            this.eventsRegistered = []
             axios
               .get(
                 import.meta.env.VITE_ROOT_API +
                   `/events/client/${this.$route.params.id}`
               )
               .then((res) => {
-                const data = res.data
-                for (let i = 0; i < data.length; i++) {
-                  this.clientEvents.push({
-                    name: data[i].name
+                // rewrote to forEach arrow function for increased readability
+                res.data.forEach((e) => {
+                  this.eventsRegistered.push({
+                    name: e.name,
+                    eventDate: e.date
                   })
-                }
+                })
               })
           })
           .catch((error) => {
@@ -127,6 +120,8 @@ export default {
             }
           })
       })
+      // clear events selection after attempting to register for events
+      this.eventsSelected = []
     }
   },
   validations() {
@@ -383,7 +378,7 @@ export default {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-300">
-                <tr v-for="event in clientEvents" :key="event._id">
+                <tr v-for="event in eventsRegistered" :key="event._id">
                   <td class="p-2 text-left">{{ event.name }}</td>
                   <td class="p-2 text-left">
                     {{ formattedDate(event.eventDate) }}
@@ -394,21 +389,24 @@ export default {
           </div>
 
           <div class="flex flex-col">
-            <label class="typo__label">Select Events to be added</label>
+            <!-- fixed weird selection duplication bug -->
             <VueMultiselect
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              v-model="eventsChosen"
-              :options="events"
+              v-model="eventsSelected"
+              :options="eventsAll"
               :multiple="true"
+              :close-on-select="true"
+              placeholder="Select Events to be added"
               label="name"
-            ></VueMultiselect>
+              track-by="name"
+            />
             <div class="flex justify-between">
               <button
                 @click="addToEvent"
                 type="submit"
                 class="mt-5 bg-red-700 text-white rounded"
               >
-                Add Client to Events
+                Add Client to Selected Events
               </button>
             </div>
           </div>

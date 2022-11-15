@@ -6,9 +6,6 @@ export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
-  mounted() {
-    window.scrollTo(0, 0)
-  },
   data() {
     return {
       client: {
@@ -30,6 +27,9 @@ export default {
       }
     }
   },
+  mounted() {
+    window.scrollTo(0, 0)
+  },
   methods: {
     async handleSubmitForm() {
       // Checks to see if there are any errors in validation
@@ -42,23 +42,6 @@ export default {
           .then(() => {
             alert('Client has been succesfully added.')
             this.$router.push('/findClient')
-            this.client = {
-              firstName: '',
-              middleName: '',
-              lastName: '',
-              email: '',
-              phoneNumber: {
-                primary: '',
-                alternate: ''
-              },
-              address: {
-                line1: '',
-                line2: '',
-                city: '',
-                county: '',
-                zip: ''
-              }
-            }
           })
           .catch((error) => {
             console.log(error)

@@ -30,16 +30,18 @@ export default {
     }
   },
   beforeMount() {
+    console.log('beforeMount')
     axios
       .get(
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
       )
       .then((res) => {
-        const data = res.data[0]
+        // findOne, no need to get array index
+        const data = res.data
+        console.log(data)
         this.event.name = data.name
-        this.event.date = DateTime.fromISO(data.date)
-          .plus({ days: 1 })
-          .toISODate()
+        this.event.date = this.formattedDate(data.date)
+        console.log(this.event.date)
         this.event.description = data.description
         this.checkedServices = data.services
         this.event.address = data.address
@@ -51,7 +53,8 @@ export default {
                 `/clients/id/${this.attendeeIDs[i]}`
             )
             .then((res) => {
-              const data = res.data[0]
+              // findOne, no need to get array index
+              const data = res.data
               this.attendeeData.push({
                 attendeeID: this.attendeeIDs[i],
                 attendeeFirstName: data.firstName,
@@ -64,8 +67,15 @@ export default {
       })
   },
   methods: {
+    // better formatted date, converts UTC to local time
     formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
+      console.log('formatting date')
+      const dt = DateTime.fromISO(datetimeDB, {
+        zone: 'utc'
+      })
+      return dt
+        .setZone(DateTime.now().zoneName, { keepLocalTime: true })
+        .toLocaleString()
     },
     handleEventUpdate() {
       this.event.services = this.checkedServices
@@ -135,9 +145,9 @@ export default {
               <span class="text-gray-700">Date</span>
               <span style="color: #ff0000">*</span>
               <input
+                type="date"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="event.date"
-                type="date"
               />
               <span class="text-black" v-if="v$.event.date.$error">
                 <p

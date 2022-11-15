@@ -139,15 +139,18 @@ router.put('/deregister/:id', (req, res, next) => {
 
 // hard DELETE client by ID, as per project specifications
 router.delete('/:id', (req, res, next) => {
-  clients.findByIdAndDelete(req.params.id, (error, data) => {
-    if (error) {
-      return next(error)
-    } else if (!data) {
-      res.status(400).send('Client not found')
-    } else {
-      res.send('Client deleted')
+  clients.findByIdAndDelete(
+    { _id: req.params.id, organization_id: process.env.ORG },
+    (error, data) => {
+      if (error) {
+        return next(error)
+      } else if (!data) {
+        res.status(400).send('Client not found')
+      } else {
+        res.send('Client deleted')
+      }
     }
-  })
+  )
 })
 
 module.exports = router

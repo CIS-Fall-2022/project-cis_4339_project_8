@@ -81,18 +81,14 @@ export default {
     editClient(clientID) {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })
     },
-    eventDelete(id) {
-      let apiURL = import.meta.env.VITE_ROOT_API + '/events/${this.id}'
-      let indexOfArrayItem = this.event.findIndex((i) => i.this.id === id)
-      axios
-        .delete(apiURL)
-        .then(() => {
-          alert('Event has been deleted.')
-          this.event.splice(indexOfArrayItem, 1)
-        })
-        .catch((error) => {
+    eventDelete() {
+      let apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`
+      axios.delete(apiURL, this.event).then(() => {
+        alert('Event has been deleted.')
+        this.$router.back().catch((error) => {
           console.log(error)
         })
+      })
     }
   },
   // sets validations for the various data properties

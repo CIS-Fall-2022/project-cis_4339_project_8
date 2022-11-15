@@ -120,18 +120,14 @@ export default {
         })
       })
     },
-    clientDelete(id) {
-      let apiURL = import.meta.env.VITE_ROOT_API + '/clients/${this.id}'
-      let indexOfArrayItem = this.client.findIndex((i) => i.this.id === id)
-      axios
-        .delete(apiURL)
-        .then(() => {
-          alert('Client has been deleted.')
-          this.client.splice(indexOfArrayItem, 1)
-        })
-        .catch((error) => {
+    clientDelete() {
+      let apiURL = import.meta.env.VITE_ROOT_API + `/clients/${this.id}`
+      axios.delete(apiURL, this.client).then(() => {
+        alert('Client has been deleted.')
+        this.$router.back().catch((error) => {
           console.log(error)
         })
+      })
     }
   },
   validations() {

@@ -101,24 +101,31 @@ export default {
     },
     addToEvent() {
       this.eventsChosen.forEach((event) => {
-        const apiURL =
-          import.meta.env.VITE_ROOT_API + '/events/addAttendee/' + event._id
-        axios.put(apiURL, { attendee: this.$route.params.id }).then(() => {
-          this.clientEvents = []
-          axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/events/client/${this.$route.params.id}`
-            )
-            .then((res) => {
-              const data = res.data
-              for (let i = 0; i < data.length; i++) {
-                this.clientEvents.push({
-                  name: data[i].name
-                })
-              }
-            })
-        })
+        const apiURL = import.meta.env.VITE_ROOT_API + '/events/register/'
+        const query = { event: event._id, client: this.$route.params.id }
+        axios
+          .put(apiURL, null, { params: query })
+          .then(() => {
+            this.clientEvents = []
+            axios
+              .get(
+                import.meta.env.VITE_ROOT_API +
+                  `/events/client/${this.$route.params.id}`
+              )
+              .then((res) => {
+                const data = res.data
+                for (let i = 0; i < data.length; i++) {
+                  this.clientEvents.push({
+                    name: data[i].name
+                  })
+                }
+              })
+          })
+          .catch((error) => {
+            if (error.response.data) {
+              alert(`${event.name}: ${error.response.data}`)
+            }
+          })
       })
     }
   },

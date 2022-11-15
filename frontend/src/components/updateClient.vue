@@ -45,19 +45,6 @@ export default {
         // simplified setting this.client
         this.client = res.data
       })
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API +
-          `/events/client/${this.$route.params.id}`
-      )
-      .then((res) => {
-        res.data.forEach((event) => {
-          this.eventsRegistered.push({
-            name: event.name,
-            eventDate: event.date
-          })
-        })
-      })
     axios.get(import.meta.env.VITE_ROOT_API + '/events').then((res) => {
       // rewrote to forEach arrow function for increased readability
       res.data.forEach((e) => {
@@ -67,6 +54,7 @@ export default {
         })
       })
     })
+    this.getEventsRegistered()
   },
   mounted() {
     window.scrollTo(0, 0)
@@ -81,15 +69,34 @@ export default {
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
         .toLocaleString()
     },
-    handleClientUpdate() {
-      const apiURL =
-        import.meta.env.VITE_ROOT_API + `/clients/update/${this.id}`
-      axios.put(apiURL, this.client).then(() => {
-        alert('Update has been saved.')
-        this.$router.back().catch((error) => {
-          console.log(error)
+    getEventsRegistered() {
+      this.eventsRegistered = []
+      axios
+        .get(
+          import.meta.env.VITE_ROOT_API +
+            `/events/client/${this.$route.params.id}`
+        )
+        .then((res) => {
+          res.data.forEach((event) => {
+            this.eventsRegistered.push({
+              name: event.name,
+              eventDate: event.date
+            })
+          })
         })
-      })
+    },
+    async updateClient() {
+      // Checks to see if there are any errors in validation
+      const isFormCorrect = await this.v$.$validate()
+      // If no errors found. isFormCorrect = True then the form is submitted
+      if (isFormCorrect) {
+        const apiURL =
+          import.meta.env.VITE_ROOT_API + `/clients/update/${this.id}`
+        axios.put(apiURL, this.client).then(() => {
+          alert('Update has been saved.')
+          this.$router.back()
+        })
+      }
     },
     addToEvent() {
       this.eventsSelected.forEach((event) => {
@@ -97,23 +104,7 @@ export default {
         const query = { event: event._id, client: this.$route.params.id }
         axios
           .put(apiURL, null, { params: query })
-          .then(() => {
-            this.eventsRegistered = []
-            axios
-              .get(
-                import.meta.env.VITE_ROOT_API +
-                  `/events/client/${this.$route.params.id}`
-              )
-              .then((res) => {
-                // rewrote to forEach arrow function for increased readability
-                res.data.forEach((e) => {
-                  this.eventsRegistered.push({
-                    name: e.name,
-                    eventDate: e.date
-                  })
-                })
-              })
-          })
+          .then(() => this.getEventsRegistered())
           .catch((error) => {
             if (error.response.data) {
               alert(`${event.name}: ${error.response.data}`)
@@ -343,7 +334,7 @@ export default {
         >
           <div class="flex justify-between mt-10 mr-20">
             <button
-              @click="handleClientUpdate"
+              @click="updateClient"
               type="submit"
               class="bg-red-700 text-white rounded"
             >
@@ -354,7 +345,7 @@ export default {
             <button
               type="reset"
               class="border border-red-700 bg-white text-red-700 rounded"
-              @click="$router.go(-1)"
+              @click="$router.back()"
             >
               Go back
             </button>

@@ -15,7 +15,7 @@ export default {
   }
 }
 </script>
-<template>
+<template> //template like HW 2
   <main class="flex flex-row">
     <div id="_container" class="h-screen">
       <header class="w-full">

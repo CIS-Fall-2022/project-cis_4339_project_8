@@ -15,7 +15,7 @@ export default {
   }
 }
 </script>
-<template> //template like HW 2
+<template>
   <main class="flex flex-row">
     <div id="_container" class="h-screen">
       <header class="w-full">
@@ -31,7 +31,7 @@ export default {
                   class="material-icons"
                   >dashboard</span
                 >
-                Dashboard //dashboard css 
+                Dashboard
               </router-link>
             </li>
             <li>
@@ -41,7 +41,7 @@ export default {
                   class="material-icons"
                   >people</span
                 >
-                Client Intake Form //client intake form css
+                Client Intake Form
               </router-link>
             </li>
             <li>
@@ -51,7 +51,7 @@ export default {
                   class="material-icons"
                   >event</span
                 >
-                Create Event //create event css
+                Create Event
               </router-link>
             </li>
             <li>
@@ -61,7 +61,7 @@ export default {
                   class="material-icons"
                   >search</span
                 >
-                Find Client //find client css
+                Find Client
               </router-link>
             </li>
             <li>
@@ -71,7 +71,7 @@ export default {
                   class="material-icons"
                   >search</span
                 >
-                Find Event //find event css
+                Find Event
               </router-link>
             </li>
           </ul>
@@ -91,7 +91,7 @@ export default {
     </div>
   </main>
 </template>
-<style> //style gotten from the file like HW 2
+<style>
 #_container {
   background-color: #c8102e;
   color: white;

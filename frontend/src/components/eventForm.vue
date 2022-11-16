@@ -37,20 +37,6 @@ export default {
           .then(() => {
             alert('Event has been added.')
             this.$router.push('/findEvents')
-            this.event = {
-              name: '',
-              services: [],
-              date: '',
-              address: {
-                line1: '',
-                line2: '',
-                city: '',
-                county: '',
-                zip: ''
-              },
-              description: ''
-            }
-            this.checkedServices = []
           })
           .catch((error) => {
             console.log(error)

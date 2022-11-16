@@ -16,6 +16,9 @@ export default {
       error: null
     }
   },
+  mounted() {
+    this.getAttendanceData()
+  },
   methods: {
     async getAttendanceData() {
       try {
@@ -55,17 +58,14 @@ export default {
     routePush(routeName) {
       this.$router.push({ name: routeName })
     },
-    formattedDate(d) {
-      const dt = DateTime.fromISO(d, {
+    formattedDate(datetimeDB) {
+      const dt = DateTime.fromISO(datetimeDB, {
         zone: 'utc'
       })
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
         .toLocaleString()
     }
-  },
-  mounted() {
-    this.getAttendanceData()
   }
 }
 </script>

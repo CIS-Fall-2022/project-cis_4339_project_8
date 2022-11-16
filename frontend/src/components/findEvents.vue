@@ -13,16 +13,17 @@ export default {
     }
   },
   mounted() {
-    const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
-    this.queryData = []
-    axios.get(apiURL).then((res) => {
-      this.queryData = res.data
-    })
-    window.scrollTo(0, 0)
+    this.getEvents()
   },
   methods: {
+    // better formattedDate
     formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
+      const dt = DateTime.fromISO(datetimeDB, {
+        zone: 'utc'
+      })
+      return dt
+        .setZone(DateTime.now().zoneName, { keepLocalTime: true })
+        .toLocaleString()
     },
     handleSubmitForm() {
       let apiURL = ''
@@ -39,18 +40,22 @@ export default {
         this.queryData = res.data
       })
     },
+    // abstracted method to get events
+    getEvents() {
+      const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
+      this.queryData = []
+      axios.get(apiURL).then((res) => {
+        this.queryData = res.data
+      })
+      window.scrollTo(0, 0)
+    },
     clearSearch() {
       // Resets all the variables
       this.searchBy = ''
       this.name = ''
       this.eventDate = ''
 
-      // get all entries
-      const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
-      this.queryData = []
-      axios.get(apiURL).then((res) => {
-        this.queryData = res.data
-      })
+      this.getEvents()
     },
     editEvent(eventID) {
       this.$router.push({ name: 'eventdetails', params: { id: eventID } })

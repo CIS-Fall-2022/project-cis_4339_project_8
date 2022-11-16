@@ -11,9 +11,7 @@ export default {
   },
   data() {
     return {
-      attendeeIDs: [],
-      attendeeData: [],
-      checkedServices: [],
+      clientAttendees: [],
       event: {
         name: '',
         services: [],
@@ -25,7 +23,8 @@ export default {
           county: '',
           zip: ''
         },
-        description: ''
+        description: '',
+        attendees: []
       }
     }
   },
@@ -35,47 +34,34 @@ export default {
         import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
       )
       .then((res) => {
-        const data = res.data[0]
-        this.event.name = data.name
-        console.log(data.date)
-        this.event.date = DateTime.fromISO(data.date)
-          .plus({ days: 1 })
-          .toISODate()
-        this.event.description = data.description
-        this.checkedServices = data.services
-        this.event.address = data.address
-        this.attendeeIDs = data.attendees
-        for (let i = 0; i < this.attendeeIDs.length; i++) {
+        // cleanup and simplify
+        this.event = res.data
+        this.event.date = this.formattedDate(this.event.date)
+        this.event.attendees.forEach((e) => {
           axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/clients/id/${this.attendeeIDs[i]}`
-            )
+            .get(import.meta.env.VITE_ROOT_API + `/clients/id/${e}`)
             .then((res) => {
-              const data = res.data[0]
-              this.attendeeData.push({
-                attendeeID: this.attendeeIDs[i],
-                attendeeFirstName: data.firstName,
-                attendeeLastName: data.lastName,
-                attendeeCity: data.address.city,
-                attendeePhoneNumber: data.phoneNumber.primary
-              })
+              // cleanup and simplify
+              this.clientAttendees.push(res.data)
             })
-        }
+        })
       })
   },
   methods: {
+    // better formatted date, converts UTC to local time
     formattedDate(datetimeDB) {
-      return DateTime.fromISO(datetimeDB).plus({ days: 1 }).toLocaleString()
+      const dt = DateTime.fromISO(datetimeDB, {
+        zone: 'utc'
+      })
+      return dt
+        .setZone(DateTime.now().zoneName, { keepLocalTime: true })
+        .toISODate()
     },
     handleEventUpdate() {
-      this.event.services = this.checkedServices
-      const apiURL = import.meta.env.VITE_ROOT_API + `/events/${this.id}`
+      const apiURL = import.meta.env.VITE_ROOT_API + `/events/update/${this.id}`
       axios.put(apiURL, this.event).then(() => {
         alert('Update has been saved.')
-        this.$router.back().catch((error) => {
-          console.log(error)
-        })
+        this.$router.back()
       })
     },
     editClient(clientID) {
@@ -144,9 +130,9 @@ export default {
               <span class="text-gray-700">Date</span>
               <span style="color: #ff0000">*</span>
               <input
+                type="date"
                 class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 v-model="event.date"
-                type="date"
               />
               <span class="text-black" v-if="v$.event.date.$error">
                 <p
@@ -166,9 +152,11 @@ export default {
           <div class="flex flex-col">
             <label class="block">
               <span class="text-gray-700">Description</span>
+              <!-- added missing v-model connection -->
               <textarea
                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
                 rows="2"
+                v-model="event.description"
               ></textarea>
             </label>
           </div>
@@ -185,7 +173,7 @@ export default {
                   type="checkbox"
                   id="familySupport"
                   value="Family Support"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -198,7 +186,7 @@ export default {
                   type="checkbox"
                   id="adultEducation"
                   value="Adult Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -211,7 +199,7 @@ export default {
                   type="checkbox"
                   id="youthServices"
                   value="Youth Services Program"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -224,7 +212,7 @@ export default {
                   type="checkbox"
                   id="childhoodEducation"
                   value="Early Childhood Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -356,18 +344,16 @@ export default {
               </thead>
               <tbody class="divide-y divide-gray-300">
                 <tr
-                  @click="editClient(client.attendeeID)"
-                  v-for="client in attendeeData"
+                  @click="editClient(client._id)"
+                  v-for="client in clientAttendees"
                   :key="client._id"
                 >
                   <td class="p-2 text-left">
-                    {{
-                      client.attendeeFirstName + ' ' + client.attendeeLastName
-                    }}
+                    {{ client.firstName + ' ' + client.lastName }}
                   </td>
-                  <td class="p-2 text-left">{{ client.attendeeCity }}</td>
+                  <td class="p-2 text-left">{{ client.address.city }}</td>
                   <td class="p-2 text-left">
-                    {{ client.attendeePhoneNumber }}
+                    {{ client.phoneNumber.primary }}
                   </td>
                 </tr>
               </tbody>

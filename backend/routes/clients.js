@@ -22,9 +22,12 @@ router.get('/', (req, res, next) => {
 
 // GET single client by ID
 router.get('/id/:id', (req, res, next) => {
-  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
+  // use findOne instead of find to not return array
+  clients.findOne({ _id: req.params.id, orgs: org }, (error, data) => {
     if (error) {
       return next(error)
+    } else if (!data) {
+      res.status(400).send('Client not found')
     } else {
       res.json(data)
     }
@@ -97,6 +100,7 @@ router.put('/register/:id', (req, res, next) => {
           { $push: { orgs: org } },
           (error, data) => {
             if (error) {
+              console.log(error)
               return next(error)
             } else {
               res.send('Client registered with org')

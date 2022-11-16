@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
+// make all paths and names lowercase for consistency
 const routes = [
   {
     path: '/',
@@ -8,13 +9,13 @@ const routes = [
   },
   {
     path: '/intakeform',
-    name: 'intakeForm',
+    name: 'intakeform',
     props: true,
     component: () => import('../components/intakeForm.vue')
   },
   {
     path: '/findclient',
-    name: 'findClient',
+    name: 'findclient',
     component: () => import('../components/findClient.vue')
   },
   {
@@ -29,12 +30,12 @@ const routes = [
     component: () => import('../components/eventForm.vue')
   },
   {
-    path: '/findEvents',
-    name: 'findEvents',
+    path: '/findevents',
+    name: 'findevents',
     component: () => import('../components/findEvents.vue')
   },
   {
-    path: '/eventDetails/:id',
+    path: '/eventdetails/:id',
     name: 'eventdetails',
     props: true,
     component: () => import('../components/eventDetails.vue')

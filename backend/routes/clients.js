@@ -63,6 +63,26 @@ router.get('/search', (req, res, next) => {
   })
 })
 
+router.get('/lookup/:phoneNumber', (req, res, next) => {
+  clients.findOne(
+    {
+      phoneNumber: {
+        primary: {
+          $regex: `^${req.params.phoneNumber}`,
+          $options: 'i'
+        }
+      }
+    },
+    (error, data) => {
+      if (error) {
+        return next(error)
+      } else {
+        res.json(data)
+      }
+    }
+  )
+})
+
 // POST new client
 router.post('/', (req, res, next) => {
   const newClient = req.body
@@ -89,56 +109,34 @@ router.put('/update/:id', (req, res, next) => {
 
 // PUT add existing client to org
 router.put('/register/:id', (req, res, next) => {
-  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      // only add attendee if not yet registered
-      if (!data.length) {
-        clients.findByIdAndUpdate(
-          req.params.id,
-          { $push: { orgs: org } },
-          (error, data) => {
-            if (error) {
-              console.log(error)
-              return next(error)
-            } else {
-              res.send('Client registered with org')
-            }
-          }
-        )
+  clients.findByIdAndUpdate(
+    req.params.id,
+    { $push: { orgs: org } },
+    (error, data) => {
+      if (error) {
+        console.log(error)
+        return next(error)
       } else {
-        res.status(400).send('Client already registered with org')
+        res.send('Client registered with org')
       }
     }
-  })
+  )
 })
 
 // PUT remove existing client from org
 router.put('/deregister/:id', (req, res, next) => {
-  clients.find({ _id: req.params.id, orgs: org }, (error, data) => {
-    if (error) {
-      return next(error)
-    } else {
-      // only remove client if already registered with org
-      if (data.length) {
-        clients.findByIdAndUpdate(
-          req.params.id,
-          { $pull: { orgs: org } },
-          (error, data) => {
-            if (error) {
-              console.log(error)
-              return next(error)
-            } else {
-              res.send('Client deregistered with org')
-            }
-          }
-        )
+  clients.findByIdAndUpdate(
+    req.params.id,
+    { $pull: { orgs: org } },
+    (error, data) => {
+      if (error) {
+        console.log(error)
+        return next(error)
       } else {
-        res.status(400).send('Client already unregistered with org')
+        res.send('Client deregistered with org')
       }
     }
-  })
+  )
 })
 
 // hard DELETE client by ID, as per project specifications

@@ -31,7 +31,7 @@ export default {
                   class="material-icons"
                   >dashboard</span
                 >
-                Dashboard
+                Dashboard //dashboard css 
               </router-link>
             </li>
             <li>
@@ -41,7 +41,7 @@ export default {
                   class="material-icons"
                   >people</span
                 >
-                Client Intake Form
+                Client Intake Form //client intake form css
               </router-link>
             </li>
             <li>
@@ -51,7 +51,7 @@ export default {
                   class="material-icons"
                   >event</span
                 >
-                Create Event
+                Create Event //create event css
               </router-link>
             </li>
             <li>
@@ -61,7 +61,7 @@ export default {
                   class="material-icons"
                   >search</span
                 >
-                Find Client
+                Find Client //find client css
               </router-link>
             </li>
             <li>
@@ -71,7 +71,7 @@ export default {
                   class="material-icons"
                   >search</span
                 >
-                Find Event
+                Find Event //find event css
               </router-link>
             </li>
           </ul>
@@ -91,7 +91,7 @@ export default {
     </div>
   </main>
 </template>
-<style>
+<style> //style gotten from the file like HW 2
 #_container {
   background-color: #c8102e;
   color: white;

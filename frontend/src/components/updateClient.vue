@@ -119,6 +119,14 @@ export default {
             })
         })
       })
+    },
+    clientDelete() {
+      axios
+        .delete(import.meta.env.VITE_ROOT_API + `/clients/${this.id}`)
+        .then(() => {
+          alert('Client has been deleted.')
+          this.$router.back()
+        })
     }
   },
   validations() {
@@ -342,9 +350,18 @@ export default {
             <button
               @click="handleClientUpdate"
               type="submit"
-              class="bg-red-700 text-white rounded"
+              class="bg-green-700 text-white rounded"
             >
               Update Client
+            </button>
+          </div>
+          <div class="flex justify-between mt-10 mr-20">
+            <button
+              @click="clientDelete"
+              type="submit"
+              class="bg-red-700 text-white rounded"
+            >
+              Delete Client
             </button>
           </div>
           <div class="flex justify-between mt-10 mr-20">

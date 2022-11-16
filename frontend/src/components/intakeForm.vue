@@ -2,6 +2,8 @@
 import useVuelidate from '@vuelidate/core'
 import { required, email, alpha, numeric } from '@vuelidate/validators'
 import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
+
 export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
@@ -29,7 +31,7 @@ export default {
     }
   },
   beforeMount() {
-    axios.get(import.meta.env.VITE_ROOT_API + `/org`).then((res) => {
+    axios.get(`${apiURL}/org`).then((res) => {
       this.org = res.data._id
     })
   },
@@ -37,59 +39,45 @@ export default {
     window.scrollTo(0, 0)
   },
   methods: {
-    async handleSubmitForm() {
-      // Checks to see if there are any errors in validation
-      const isFormCorrect = await this.v$.$validate()
-      // If no errors found. isFormCorrect = True then the form is submitted
-      if (isFormCorrect) {
-        const apiURL = import.meta.env.VITE_ROOT_API + '/clients'
-        axios
-          .post(apiURL, this.client)
-          .then(() => {
-            alert('Client has been succesfully added.')
-            this.$router.push('/findClient')
-          })
-          .catch((error) => {
-            console.log(error)
-          })
-      }
-    },
+    // if valid:
+    //  if client with phonenumber exists in db:
+    //    if client already registered with org:
+    //      do nothing
+    //    else add org to client org array
+    //  else create client document
     registerClient() {
       this.v$.$validate().then((valid) => {
         if (valid) {
           axios
-            .get(
-              import.meta.env.VITE_ROOT_API +
-                `/clients/lookup/${this.client.phoneNumber.primary}`
-            )
+            .get(`${apiURL}/clients/lookup/${this.client.phoneNumber.primary}`)
             .then((res) => {
-              console.log(res.data)
               if (res.data) {
                 if (res.data.orgs.includes(this.org)) {
                   alert('Client phone number has already been registered.')
+                  this.$router.push({ name: 'findclient' })
                 } else {
                   axios
-                    .put(
-                      import.meta.env.VITE_ROOT_API +
-                        `/register/${res.data._id}`
-                    )
-                    .then(() => alert('Client registered'))
+                    .put(`${apiURL}/clients/register/${res.data._id}`)
+                    .then(() => {
+                      alert('Client registered')
+                      this.$router.push({ name: 'findclient' })
+                    })
                     .catch((error) => {
                       console.log(error)
                     })
                 }
               } else {
                 axios
-                  .post(import.meta.env.VITE_ROOT_API + '/clients', this.client)
+                  .post(`${apiURL}/clients`, this.client)
                   .then(() => {
                     alert('Client added')
+                    this.$router.push({ name: 'findclient' })
                   })
                   .catch((error) => {
                     console.log(error)
                   })
               }
             })
-          this.$router.push('/findClient')
         }
       })
     }

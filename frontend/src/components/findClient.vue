@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   data() {
@@ -12,29 +13,24 @@ export default {
       phoneNumber: ''
     }
   },
-  mounted() {
+  beforeMount() {
     this.getClients()
   },
   methods: {
     handleSubmitForm() {
-      let apiURL = ''
+      let endpoint = ''
       if (this.searchBy === 'Client Name') {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`
+        endpoint = `clients/search/?firstName=${this.firstName}&lastName=${this.lastName}&searchBy=name`
       } else if (this.searchBy === 'Client Number') {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`
+        endpoint = `clients/search/?phoneNumber.primary=${this.phoneNumber}&searchBy=number`
       }
-      axios.get(apiURL).then((res) => {
+      axios.get(`${apiURL}/${endpoint}`).then((res) => {
         this.queryData = res.data
       })
     },
     // abstract get clients call
     getClients() {
-      const apiURL = import.meta.env.VITE_ROOT_API + '/clients/'
-      axios.get(apiURL).then((res) => {
+      axios.get(`${apiURL}/clients`).then((res) => {
         this.queryData = res.data
       })
       window.scrollTo(0, 0)

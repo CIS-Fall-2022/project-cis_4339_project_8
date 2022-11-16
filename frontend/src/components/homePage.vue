@@ -2,6 +2,7 @@
 import { DateTime } from 'luxon'
 import axios from 'axios'
 import AttendanceChart from './barChart.vue'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   components: {
@@ -24,9 +25,7 @@ export default {
       try {
         this.error = null
         this.loading = true
-        const response = await axios.get(
-          import.meta.env.VITE_ROOT_API + `/events/attendance`
-        )
+        const response = await axios.get(`${apiURL}/events/attendance`)
         this.recentEvents = response.data
         this.labels = response.data.map(
           (item) => `${item.name} (${this.formattedDate(item.date)})`
@@ -55,9 +54,6 @@ export default {
       }
       this.loading = false
     },
-    routePush(routeName) {
-      this.$router.push({ name: routeName })
-    },
     formattedDate(datetimeDB) {
       const dt = DateTime.fromISO(datetimeDB, {
         zone: 'utc'
@@ -65,6 +61,10 @@ export default {
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
         .toLocaleString()
+    },
+    // method to allow click through table to event details
+    editEvent(eventID) {
+      this.$router.push({ name: 'eventdetails', params: { id: eventID } })
     }
   }
 }
@@ -93,7 +93,11 @@ export default {
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-300">
-              <tr v-for="event in recentEvents" :key="event._id">
+              <tr
+                @click="editEvent(event._id)"
+                v-for="event in recentEvents"
+                :key="event._id"
+              >
                 <td class="p-2 text-left">{{ event.name }}</td>
                 <td class="p-2 text-left">{{ formattedDate(event.date) }}</td>
                 <td class="p-2 text-left">{{ event.attendees.length }}</td>

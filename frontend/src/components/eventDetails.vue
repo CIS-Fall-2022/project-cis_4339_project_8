@@ -3,6 +3,7 @@ import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
 import { DateTime } from 'luxon'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   props: ['id'],
@@ -29,23 +30,17 @@ export default {
     }
   },
   beforeMount() {
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API + `/events/id/${this.$route.params.id}`
-      )
-      .then((res) => {
-        // cleanup and simplify
-        this.event = res.data
-        this.event.date = this.formattedDate(this.event.date)
-        this.event.attendees.forEach((e) => {
-          axios
-            .get(import.meta.env.VITE_ROOT_API + `/clients/id/${e}`)
-            .then((res) => {
-              // cleanup and simplify
-              this.clientAttendees.push(res.data)
-            })
+    axios.get(`${apiURL}/events/id/${this.$route.params.id}`).then((res) => {
+      // cleanup and simplify
+      this.event = res.data
+      this.event.date = this.formattedDate(this.event.date)
+      this.event.attendees.forEach((e) => {
+        axios.get(`${apiURL}/clients/id/${e}`).then((res) => {
+          // cleanup and simplify
+          this.clientAttendees.push(res.data)
         })
       })
+    })
   },
   methods: {
     // better formatted date, converts UTC to local time
@@ -58,8 +53,7 @@ export default {
         .toISODate()
     },
     handleEventUpdate() {
-      const apiURL = import.meta.env.VITE_ROOT_API + `/events/update/${this.id}`
-      axios.put(apiURL, this.event).then(() => {
+      axios.put(`${apiURL}/events/update/${this.id}`, this.event).then(() => {
         alert('Update has been saved.')
         this.$router.back()
       })
@@ -68,12 +62,10 @@ export default {
       this.$router.push({ name: 'updateclient', params: { id: clientID } })
     },
     eventDelete() {
-      axios
-        .delete(import.meta.env.VITE_ROOT_API + `/events/${this.id}`)
-        .then(() => {
-          alert('Event has been deleted.')
-          this.$router.back()
-        })
+      axios.delete(`${apiURL}/events/${this.id}`).then(() => {
+        alert('Event has been deleted.')
+        this.$router.push({ name: 'findevents' })
+      })
     }
   },
   // sets validations for the various data properties

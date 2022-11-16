@@ -16,7 +16,8 @@ router.get('/', (req, res, next) => {
         return res.json(data)
       }
     })
-    .sort({ updatedAt: -1 })
+    // sort by date ascending
+    .sort({ date: 1 })
     .limit(10)
 })
 
@@ -40,7 +41,8 @@ router.get('/search/', (req, res, next) => {
   const dbQuery = { org: org }
   switch (req.query.searchBy) {
     case 'name':
-      dbQuery.name = { $regex: `^${req.query.name}`, $options: 'i' }
+      // match event name, no anchor
+      dbQuery.name = { $regex: `${req.query.name}`, $options: 'i' }
       break
     case 'date':
       dbQuery.date = req.query.eventDate
@@ -139,29 +141,15 @@ router.put('/register', (req, res, next) => {
 
 // PUT remove attendee from event
 router.put('/deregister', (req, res, next) => {
-  events.find(
-    { _id: req.query.event, attendees: req.query.client },
+  events.findByIdAndUpdate(
+    req.query.event,
+    { $pull: { attendees: req.query.client } },
     (error, data) => {
       if (error) {
+        console.log(error)
         return next(error)
       } else {
-        // only remove attendee if already registered
-        if (data.length) {
-          events.findByIdAndUpdate(
-            req.query.event,
-            { $pull: { attendees: req.query.client } },
-            (error, data) => {
-              if (error) {
-                console.log(error)
-                return next(error)
-              } else {
-                res.send('Client deregistered with event')
-              }
-            }
-          )
-        } else {
-          res.status(400).send('Client already unregistered with event')
-        }
+        res.send('Client deregistered with event')
       }
     }
   )

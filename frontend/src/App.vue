@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   name: 'App',
@@ -9,7 +10,7 @@ export default {
     }
   },
   beforeMount() {
-    axios.get(import.meta.env.VITE_ROOT_API + `/org`).then((res) => {
+    axios.get(`${apiURL}/org`).then((res) => {
       this.orgName = res.data.name
     })
   }
@@ -65,7 +66,7 @@ export default {
               </router-link>
             </li>
             <li>
-              <router-link to="/findEvents">
+              <router-link to="/findevents">
                 <span
                   style="position: relative; top: 6px"
                   class="material-icons"

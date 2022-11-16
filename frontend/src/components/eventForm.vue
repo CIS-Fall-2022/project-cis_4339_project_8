@@ -2,13 +2,15 @@
 import useVuelidate from '@vuelidate/core'
 import { required } from '@vuelidate/validators'
 import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
+
 export default {
   setup() {
     return { v$: useVuelidate({ $autoDirty: true }) }
   },
   data() {
     return {
-      checkedServices: [],
+      // removed unnecessary extra array to track services
       event: {
         name: '',
         services: [],
@@ -30,13 +32,11 @@ export default {
       const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        this.event.services = this.checkedServices
-        const apiURL = import.meta.env.VITE_ROOT_API + '/events'
         axios
-          .post(apiURL, this.event)
+          .post(`${apiURL}/events`, this.event)
           .then(() => {
             alert('Event has been added.')
-            this.$router.push('/findEvents')
+            this.$router.push({ name: 'findevents' })
           })
           .catch((error) => {
             console.log(error)
@@ -142,7 +142,7 @@ export default {
                   type="checkbox"
                   id="familySupport"
                   value="Family Support"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -155,7 +155,7 @@ export default {
                   type="checkbox"
                   id="adultEducation"
                   value="Adult Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -168,7 +168,7 @@ export default {
                   type="checkbox"
                   id="youthServices"
                   value="Youth Services Program"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />
@@ -181,7 +181,7 @@ export default {
                   type="checkbox"
                   id="childhoodEducation"
                   value="Early Childhood Education"
-                  v-model="checkedServices"
+                  v-model="event.services"
                   class="rounded border-gray-300 text-indigo-600 shadow-sm focus:border-indigo-300 focus:ring focus:ring-offset-0 focus:ring-indigo-200 focus:ring-opacity-50"
                   notchecked
                 />

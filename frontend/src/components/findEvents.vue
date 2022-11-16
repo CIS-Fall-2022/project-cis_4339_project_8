@@ -1,11 +1,12 @@
 <script>
 import { DateTime } from 'luxon'
 import axios from 'axios'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   data() {
     return {
-      queryData: [],
+      events: [],
       // Parameter for search to occur
       searchBy: '',
       name: '',
@@ -26,26 +27,20 @@ export default {
         .toLocaleString()
     },
     handleSubmitForm() {
-      let apiURL = ''
+      let endpoint = ''
       if (this.searchBy === 'Event Name') {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/events/search/?name=${this.name}&searchBy=name`
+        endpoint = `events/search/?name=${this.name}&searchBy=name`
       } else if (this.searchBy === 'Event Date') {
-        apiURL =
-          import.meta.env.VITE_ROOT_API +
-          `/events/search/?eventDate=${this.eventDate}&searchBy=date`
+        endpoint = `events/search/?eventDate=${this.eventDate}&searchBy=date`
       }
-      axios.get(apiURL).then((res) => {
-        this.queryData = res.data
+      axios.get(`${apiURL}/${endpoint}`).then((res) => {
+        this.events = res.data
       })
     },
     // abstracted method to get events
     getEvents() {
-      const apiURL = import.meta.env.VITE_ROOT_API + '/events/'
-      this.queryData = []
-      axios.get(apiURL).then((res) => {
-        this.queryData = res.data
+      axios.get(`${apiURL}/events`).then((res) => {
+        this.events = res.data
       })
       window.scrollTo(0, 0)
     },
@@ -154,7 +149,7 @@ export default {
           <tbody class="divide-y divide-gray-300">
             <tr
               @click="editEvent(event._id)"
-              v-for="event in queryData"
+              v-for="event in events"
               :key="event._id"
             >
               <td class="p-2 text-left">{{ event.name }}</td>

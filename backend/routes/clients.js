@@ -36,10 +36,8 @@ router.get('/id/:id', (req, res, next) => {
 
 // GET entries based on search query
 // Ex: '...?firstName=Bob&lastName=&searchBy=name'
-// does NOT filter by org, this endpoint will be used by the frontend
-// to determine whether a client exists in the db
 router.get('/search', (req, res, next) => {
-  const dbQuery = {}
+  const dbQuery = { orgs: org }
   switch (req.query.searchBy) {
     case 'name':
       dbQuery.firstName = { $regex: `^${req.query.firstName}`, $options: 'i' }
@@ -63,14 +61,13 @@ router.get('/search', (req, res, next) => {
   })
 })
 
+// GET lookup by phone, verify org membership on frontend
 router.get('/lookup/:phoneNumber', (req, res, next) => {
   clients.findOne(
     {
-      phoneNumber: {
-        primary: {
-          $regex: `^${req.params.phoneNumber}`,
-          $options: 'i'
-        }
+      ['phoneNumber.primary']: {
+        $regex: `^${req.params.phoneNumber}`,
+        $options: 'i'
       }
     },
     (error, data) => {

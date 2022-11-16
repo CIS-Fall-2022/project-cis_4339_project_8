@@ -4,6 +4,7 @@ import { required, email, alpha, numeric } from '@vuelidate/validators'
 import VueMultiselect from 'vue-multiselect'
 import axios from 'axios'
 import { DateTime } from 'luxon'
+const apiURL = import.meta.env.VITE_ROOT_API
 
 export default {
   props: ['id'],
@@ -37,22 +38,13 @@ export default {
     }
   },
   beforeMount() {
-    axios
-      .get(
-        import.meta.env.VITE_ROOT_API + `/clients/id/${this.$route.params.id}`
-      )
-      .then((res) => {
-        // simplified setting this.client
-        this.client = res.data
-      })
-    axios.get(import.meta.env.VITE_ROOT_API + '/events').then((res) => {
-      // rewrote to forEach arrow function for increased readability
-      res.data.forEach((e) => {
-        this.eventsAll.push({
-          name: e.name,
-          _id: e._id
-        })
-      })
+    axios.get(`${apiURL}/clients/id/${this.$route.params.id}`).then((res) => {
+      // simplified setting client
+      this.client = res.data
+    })
+    axios.get(`${apiURL}/events`).then((res) => {
+      // simplified setting eventsAll
+      this.eventsAll = res.data
     })
     this.getEventsRegistered()
   },
@@ -70,19 +62,11 @@ export default {
         .toLocaleString()
     },
     getEventsRegistered() {
-      this.eventsRegistered = []
       axios
-        .get(
-          import.meta.env.VITE_ROOT_API +
-            `/events/client/${this.$route.params.id}`
-        )
+        .get(`${apiURL}/events/client/${this.$route.params.id}`)
         .then((res) => {
-          res.data.forEach((event) => {
-            this.eventsRegistered.push({
-              name: event.name,
-              eventDate: event.date
-            })
-          })
+          // simplified setting eventsRegistered
+          this.eventsRegistered = res.data
         })
     },
     async updateClient() {
@@ -90,20 +74,20 @@ export default {
       const isFormCorrect = await this.v$.$validate()
       // If no errors found. isFormCorrect = True then the form is submitted
       if (isFormCorrect) {
-        const apiURL =
-          import.meta.env.VITE_ROOT_API + `/clients/update/${this.id}`
-        axios.put(apiURL, this.client).then(() => {
-          alert('Update has been saved.')
-          this.$router.back()
-        })
+        axios
+          .put(`${apiURL}/clients/update/${this.id}`, this.client)
+          .then(() => {
+            alert('Update has been saved.')
+            this.$router.back()
+          })
       }
     },
     addToEvent() {
       this.eventsSelected.forEach((event) => {
-        const apiURL = import.meta.env.VITE_ROOT_API + '/events/register/'
-        const query = { event: event._id, client: this.$route.params.id }
         axios
-          .put(apiURL, null, { params: query })
+          .put(`${apiURL}/events/register`, null, {
+            params: { event: event._id, client: this.id }
+          })
           .then(() => this.getEventsRegistered())
           .catch((error) => {
             if (error.response.data) {
@@ -114,13 +98,29 @@ export default {
       // clear events selection after attempting to register for events
       this.eventsSelected = []
     },
-    clientDelete() {
+    // replaces client hard delete
+    // find all events where client appears in attendees array and pull it
+    // then pull org from client org array
+    deregisterClient() {
       axios
-        .delete(import.meta.env.VITE_ROOT_API + `/clients/${this.id}`)
-        .then(() => {
-          alert('Client has been deleted.')
-          this.$router.back()
+        .get(`${apiURL}/events/client/${this.id}`)
+        .then((res) => {
+          res.data.forEach((e) => {
+            axios.put(`${apiURL}/events/deregister`, null, {
+              params: { event: e._id, client: this.id }
+            })
+          })
         })
+        .finally(
+          axios.put(`${apiURL}/clients/deregister/${this.id}`).then(() => {
+            alert('Client has been deleted.')
+            this.$router.push({ name: 'findclient' })
+          })
+        )
+    },
+    // function to allow click through to event details
+    editEvent(eventID) {
+      this.$router.push({ name: 'eventdetails', params: { id: eventID } })
     }
   },
   validations() {
@@ -351,7 +351,7 @@ export default {
           </div>
           <div class="flex justify-between mt-10 mr-20">
             <button
-              @click="clientDelete"
+              @click="deregisterClient"
               type="submit"
               class="bg-red-700 text-white rounded"
             >
@@ -386,10 +386,15 @@ export default {
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-300">
-                <tr v-for="event in eventsRegistered" :key="event._id">
+                <!-- allow click through to event details -->
+                <tr
+                  @click="editEvent(event._id)"
+                  v-for="event in eventsRegistered"
+                  :key="event._id"
+                >
                   <td class="p-2 text-left">{{ event.name }}</td>
                   <td class="p-2 text-left">
-                    {{ formattedDate(event.eventDate) }}
+                    {{ formattedDate(event.date) }}
                   </td>
                 </tr>
               </tbody>

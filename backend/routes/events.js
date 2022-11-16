@@ -174,18 +174,15 @@ router.put('/deregister', (req, res, next) => {
 
 // hard DELETE event by ID, as per project specifications
 router.delete('/:id', (req, res, next) => {
-  events.findByIdAndDelete(
-    { _id: req.params.id, organization_id: process.env.ORG },
-    (error, data) => {
-      if (error) {
-        return next(error)
-      } else if (!data) {
-        res.status(400).send('Event not found')
-      } else {
-        res.send('Event deleted')
-      }
+  events.findByIdAndDelete(req.params.id, (error, data) => {
+    if (error) {
+      return next(error)
+    } else if (!data) {
+      res.status(400).send('Event not found')
+    } else {
+      res.send('Event deleted')
     }
-  )
+  })
 })
 
 module.exports = router

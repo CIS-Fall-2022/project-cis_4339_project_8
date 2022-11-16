@@ -8,6 +8,7 @@ export default {
   },
   data() {
     return {
+      org: '',
       client: {
         firstName: '',
         middleName: '',
@@ -26,6 +27,11 @@ export default {
         }
       }
     }
+  },
+  beforeMount() {
+    axios.get(import.meta.env.VITE_ROOT_API + `/org`).then((res) => {
+      this.org = res.data._id
+    })
   },
   mounted() {
     window.scrollTo(0, 0)
@@ -47,6 +53,45 @@ export default {
             console.log(error)
           })
       }
+    },
+    registerClient() {
+      this.v$.$validate().then((valid) => {
+        if (valid) {
+          axios
+            .get(
+              import.meta.env.VITE_ROOT_API +
+                `/clients/lookup/${this.client.phoneNumber.primary}`
+            )
+            .then((res) => {
+              console.log(res.data)
+              if (res.data) {
+                if (res.data.orgs.includes(this.org)) {
+                  alert('Client phone number has already been registered.')
+                } else {
+                  axios
+                    .put(
+                      import.meta.env.VITE_ROOT_API +
+                        `/register/${res.data._id}`
+                    )
+                    .then(() => alert('Client registered'))
+                    .catch((error) => {
+                      console.log(error)
+                    })
+                }
+              } else {
+                axios
+                  .post(import.meta.env.VITE_ROOT_API + '/clients', this.client)
+                  .then(() => {
+                    alert('Client added')
+                  })
+                  .catch((error) => {
+                    console.log(error)
+                  })
+              }
+            })
+          this.$router.push('/findClient')
+        }
+      })
     }
   },
   // sets validations for the various data properties
@@ -76,7 +121,7 @@ export default {
     </h1>
     <div class="px-10 py-20">
       <!-- @submit.prevent stops the submit event from reloading the page-->
-      <form @submit.prevent="handleSubmitForm">
+      <form @submit.prevent="registerClient">
         <!-- grid container -->
         <div
           class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-10"

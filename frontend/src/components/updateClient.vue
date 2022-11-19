@@ -37,7 +37,7 @@ export default {
       }
     }
   },
-  beforeMount() {
+  created() {
     axios.get(`${apiURL}/clients/id/${this.$route.params.id}`).then((res) => {
       // simplified setting client
       this.client = res.data
@@ -60,6 +60,9 @@ export default {
       return dt
         .setZone(DateTime.now().zoneName, { keepLocalTime: true })
         .toLocaleString()
+    },
+    nameWithDate({ name, date }) {
+      return `${name} (${this.formattedDate(date)})`
     },
     getEventsRegistered() {
       axios
@@ -407,10 +410,11 @@ export default {
               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
               v-model="eventsSelected"
               :options="eventsAll"
+              :custom-label="nameWithDate"
               :multiple="true"
               :close-on-select="true"
               placeholder="Select Events to be added"
-              label="name"
+              label="date"
               track-by="name"
             />
             <div class="flex justify-between">

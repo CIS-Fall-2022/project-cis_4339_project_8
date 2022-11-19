@@ -13,7 +13,7 @@ export default {
       phoneNumber: ''
     }
   },
-  beforeMount() {
+  created() {
     this.getClients()
   },
   methods: {

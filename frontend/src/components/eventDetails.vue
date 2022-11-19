@@ -29,14 +29,12 @@ export default {
       }
     }
   },
-  beforeMount() {
+  created() {
     axios.get(`${apiURL}/events/id/${this.$route.params.id}`).then((res) => {
-      // cleanup and simplify
       this.event = res.data
       this.event.date = this.formattedDate(this.event.date)
       this.event.attendees.forEach((e) => {
         axios.get(`${apiURL}/clients/id/${e}`).then((res) => {
-          // cleanup and simplify
           this.clientAttendees.push(res.data)
         })
       })
@@ -308,7 +306,7 @@ export default {
             <button
               type="reset"
               class="border border-red-700 bg-white text-red-700 rounded"
-              @click="$router.go(-1)"
+              @click="$router.back()"
             >
               Go back
             </button>

@@ -19,7 +19,7 @@ const orgDataSchema = new Schema(
   }
 )
 
-// collection for intakeData
+// collection for clients
 const clientDataSchema = new Schema(
   {
     _id: { type: String, default: uuid.v1 },

@@ -121,6 +121,13 @@ export default {
           })
         )
     },
+    // unused hard delete method
+    deleteClient() {
+      axios.delete(`${apiURL}/clients/${this.id}`).then(() => {
+        alert('Client has been deleted.')
+        this.$router.push({ name: 'findclient' })
+      })
+    },
     // function to allow click through to event details
     editEvent(eventID) {
       this.$router.push({ name: 'eventdetails', params: { id: eventID } })
